@@ -1,100 +1,33 @@
-<!DOCTYPE HTML>
-<html lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
-<title>PayApp - Finance, Banking, Wallet, Crypto Mobile PWA</title>
-<link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="fonts/bootstrap-icons.css">
-<link rel="stylesheet" type="text/css" href="styles/style.css">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="manifest" href="_manifest.json">
-<meta id="theme-check" name="theme-color" content="#FFFFFF">
-<link rel="apple-touch-icon" sizes="180x180" href="app/icons/icon-192x192.png"></head>
+<?php
+require_once 'inc/config.inc.php';
 
-<body class="theme-light">
+if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
+    header("location: login.php");
+    exit();
+}
 
-<div id="preloader"><div class="spinner-border color-highlight" role="status"></div></div>
+$title = "Wallet";
+?>
 
-<!-- Page Wrapper-->
-<div id="page">
+<?php require_once 'inc/header.inc.php'; ?>
     
     <!-- Footer Bar -->
-    <div id="footer-bar" class="footer-bar-1 footer-bar-detached">
-        <a href="page-wallet.html" class="active-nav"><i class="bi bi-wallet2"></i><span>Cards</span></a>
-        <a href="page-activity.html"><i class="bi bi-graph-up"></i><span>Activity</span></a>
-        <a href="index-waves.html" class="circle-nav-2"><i class="bi bi-house-fill"></i><span>Home</span></a>
-        <a href="page-payments.html"><i class="bi bi-receipt"></i><span>Payments</span></a>
-        <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-sidebar"><i class="bi bi-three-dots"></i><span>More</span></a>
-    </div>
+    <?php require_once 'inc/footer_bar.inc.php'; ?>
 
     <!-- Page Content - Only Page Elements Here-->
     <div class="page-content footer-clear">
 
         <!-- Page Title-->
-        <div class="pt-3">
-            <div class="page-title d-flex">
-                <div class="align-self-center me-auto">
-                    <p class="color-highlight">Hello Enabled</p>
-                    <h1 class="color-theme">Cards</h1>
-                </div>
-                <div class="align-self-center ms-auto">
-                    <a href="#"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#menu-add-card"
-                    class="icon gradient-green color-white shadow-bg shadow-bg-xs rounded-m">
-                        <i class="bi bi-plus-circle font-17"></i>
-                    </a>
-                    <a href="#"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#menu-notifications"
-                    class="icon gradient-blue color-white shadow-bg shadow-bg-xs rounded-m">
-                        <i class="bi bi-bell-fill font-17"></i>
-                        <em class="badge bg-red-dark color-white scale-box">3</em>
-                    </a>
-                    <a href="#"
-                    data-bs-toggle="dropdown"
-                    class="icon gradient-blue shadow-bg shadow-bg-s rounded-m">
-                        <img src="images/pictures/25s.jpg" width="45" class="rounded-m" alt="img">
-                    </a>
-                    <!-- Page Title Dropdown Menu-->
-                    <div class="dropdown-menu">
-                        <div class="card card-style shadow-m mt-1 me-1">
-                            <div class="list-group list-custom list-group-s list-group-flush rounded-xs px-3 py-1">
-                                <a href="page-wallet.html" class="list-group-item">
-                                    <i class="has-bg gradient-green shadow-bg shadow-bg-xs color-white rounded-xs bi bi-credit-card"></i>
-                                    <strong class="font-13">Wallet</strong>
-                                </a>
-                                <a href="page-activity.html" class="list-group-item">
-                                    <i class="has-bg gradient-blue shadow-bg shadow-bg-xs color-white rounded-xs bi bi-graph-up"></i>
-                                    <strong class="font-13">Activity</strong>
-                                </a>
-                                <a href="page-profile.html" class="list-group-item">
-                                    <i class="has-bg gradient-yellow shadow-bg shadow-bg-xs color-white rounded-xs bi bi-person-circle"></i>
-                                    <strong class="font-13">Account</strong>
-                                </a>
-                                <a href="page-signin-1.html" class="list-group-item">
-                                    <i class="has-bg gradient-red shadow-bg shadow-bg-xs color-white rounded-xs bi bi-power"></i>
-                                    <strong class="font-13">Log Out</strong>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <?php require_once 'inc/page_title.inc.php'; ?>
         
         <!-- Card Stack - The Stack Height Below will be the card height-->
-        <div class="card-stack" data-stack-height="180">
+        <div class="card-stack card-stack-active" data-stack-height="180">
            
             <!-- Card Open on Click-->
-            <div class="card-stack-click"></div>
+            <div class="card-stack-click no-click"></div>
             
             <!-- Card 1-->
-            <div class="card card-style bg-5">
+            <!-- <div class="card card-style bg-5">
                 <div class="card-top p-3">
                     <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-card-more" class="icon icon-xxs bg-white color-black float-end"><i class="bi bi-three-dots font-18"></i></a>
                 </div>
@@ -110,7 +43,7 @@
                 <strong class="card-bottom no-click p-3 text-start color-white font-monospace">1234 5678 1234 5661</strong>
                 <strong class="card-bottom no-click p-3 text-end color-white font-monospace">08 / 2025</strong>
                 <div class="card-overlay bg-black opacity-50"></div>
-            </div>
+            </div> -->
             
             <!-- Card 2 -->
             <div class="card card-style bg-7">
@@ -132,7 +65,7 @@
             </div>
             
             <!-- Card 3 -->
-            <div class="card card-style bg-1">
+            <!-- <div class="card card-style bg-1">
                 <div class="card-top p-3">
                     <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-card-more" class="icon icon-xxs bg-white color-black float-end"><i class="bi bi-three-dots font-18"></i></a>
                 </div>
@@ -148,11 +81,11 @@
                 <strong class="card-bottom no-click p-3 text-start color-white font-monospace">1234 5678 1234 5661</strong>
                 <strong class="card-bottom no-click p-3 text-end color-white font-monospace">08 / 2025</strong>
                 <div class="card-overlay bg-black opacity-50"></div>
-            </div>
+            </div> -->
         </div>
         
         <!-- Card Stack Info Message / Hides when deployed -->
-        <h6 class="btn-stack-info color-theme opacity-80 text-center mt-n2 mb-3">Tap the Cards to Expand your Wallet</h6>
+        <!-- <h6 class="btn-stack-info color-theme opacity-80 text-center mt-n2 mb-3">Tap the Cards to Expand your Wallet</h6> -->
         <!-- Card Stack Button / shows when deployed -->
         <a href="#" class="disabled btn-stack-click btn mx-3 mb-4 btn-full gradient-highlight shadow-bg shadow-bg-xs">Close my Wallet</a>
 
@@ -164,14 +97,16 @@
                 <div class="tabs tabs-pill" id="tab-group-2">
                     <!-- Tab Controls -->
                     <div class="tab-controls rounded-m p-1">
-                        <a class="font-13 rounded-m" data-bs-toggle="collapse" href="#tab-4" aria-expanded="true">Settings</a>
+                        <!-- <a class="font-13 rounded-m" data-bs-toggle="collapse" href="#tab-4" aria-expanded="true">Settings</a> -->
+                        <a class="font-13 rounded-m" data-bs-toggle="collapse" href="#tab-6" aria-expanded="true">Deposit</a>
+                        <a class="font-13 rounded-m" data-bs-toggle="collapse" href="#tab-7" aria-expanded="false">Withdraw</a>
                         <a class="font-13 rounded-m" data-bs-toggle="collapse" href="#tab-5" aria-expanded="false">History</a>
-                        <a class="font-13 rounded-m" data-bs-toggle="collapse" href="#tab-x" aria-expanded="false">Activity</a>
+                        <!-- <a class="font-13 rounded-m" data-bs-toggle="collapse" href="#tab-x" aria-expanded="false">Activity</a> -->
                     </div>
                     
                     <!-- Tab 1 -->
                     <div class="mt-3"></div>
-                    <div class="collapse show" id="tab-4" data-bs-parent="#tab-group-2">
+                    <!-- <div class="collapse show" id="tab-4" data-bs-parent="#tab-group-2">
                         <div class="list-group list-custom list-group-m list-group-flush rounded-xs px-1">
                             <a href="#" class="list-group-item pe-2" data-trigger-switch="switch-5">
                                 <i class="has-bg gradient-green color-white shadow-bg shadow-bg-xs rounded-xs bi bi-gear-fill"></i>
@@ -205,10 +140,33 @@
                                 <i class="bi bi-chevron-right"></i>
                             </a>
                         </div>
+                    </div> -->
+
+                    <div class="collapse show" id="tab-6" data-bs-parent="#tab-group-2">
+                        <div class="form-custom form-label form-icon mt-3">
+                            <i class="bi bi-currency-dollar font-16"></i>
+                            <input type="text" name="to_customer_username" class="form-control rounded-xs" id="c2" placeholder="Deposit Amount"/>
+                            <label for="c2" class="color-highlight">Deposit Amount</label>
+                            <span>(required)</span>
+                        </div>
+                        <div class="pb-2"></div>
+                        <div class="form-custom form-label form-icon mt-3">
+                            <i class="bi bi-caret-up-fill font-16"></i>
+                            <select class="form-select">
+                                <option>pAccount</option>
+                                <option>bKash</option>
+                                <option>Bank</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="collapse" id="tab-7" data-bs-parent="#tab-group-2">
+                        
                     </div>
                     
                     <!-- Tab 2-->
-                    <div class="collapse" id="tab-5" data-bs-parent="#tab-group-2">
+                    <div class="collapse " id="tab-5" data-bs-parent="#tab-group-2">
                         <div class="form-custom form-label form-border form-icon mt-0 mb-0">
                             <i class="bi bi-check-circle font-13"></i>
                             <select class="form-select rounded-xs" id="c6" aria-label="Floating label select example">
@@ -261,9 +219,12 @@
                             </a>
                         </div>
                     </div>
+
+
+
                     
                     <!-- Tab 3 -->
-                    <div class="collapse" id="tab-x" data-bs-parent="#tab-group-2">
+                    <!-- <div class="collapse" id="tab-x" data-bs-parent="#tab-group-2">
                         <a href="page-activity.html" class="d-flex py-1">
                             <div class="align-self-center">
                                 <span class="icon rounded-s me-2 gradient-orange shadow-bg shadow-bg-xs"><i class="bi bi-google color-white"></i></span>
@@ -336,7 +297,7 @@
                             </div>
                         </a>
                         <div class="pb-3"></div>
-                    </div>
+                    </div> -->
                     
                     <!-- End of Tabs-->
                 </div>

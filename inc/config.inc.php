@@ -41,9 +41,9 @@ function login($data)
 {
 	if ($data) {
 		$conn = connectDB();
-		$q1 = "SELECT * FROM customers WHERE customer_username=? AND customer_password=?";
+		$q1 = "SELECT * FROM customers WHERE customer_username=? OR customer_email=? AND customer_password=?";
 		$stmt1 = $conn->prepare($q1);
-		$stmt1->bind_param('ss',$data['customer_username'], $data['customer_password']);
+		$stmt1->bind_param('sss',$data['customer_username'], $data['customer_username'], $data['customer_password']);
 		$stmt1->execute();
 		$result1 = $stmt1->get_result();
 
@@ -80,8 +80,117 @@ function createCustomerAccount($data)
 	}
 
 	return false;
-	
 }
+
+
+function getUserData($searchValue, $search_type='customer_id')
+{
+	if ($searchValue) {
+		$conn = connectDB();
+		$q1 = "SELECT * FROM customers WHERE ".$search_type."=?";
+		$stmt1 = $conn->prepare($q1);
+		if ($search_type=='customer_id') {
+			$stmt1->bind_param('i',$searchValue);
+		}else{
+			$stmt1->bind_param('s',$searchValue);
+		}
+		
+		$stmt1->execute();
+		$result1 = $stmt1->get_result();
+
+		// if ($result1->num_rows > 0) {
+			$datas = $result1->fetch_assoc();
+			$whiteListed = [
+				'customer_id' => $datas['customer_id'],
+				'customer_email' => $datas['customer_email'],
+				'customer_name' => $datas['customer_name'],
+				'customer_phone' => $datas['customer_phone'],
+				'customer_username' => $datas['customer_username'],
+				'customer_country_id' => $datas['customer_country_id'],
+			];
+			// print_r($datas);
+			// die();
+			return $whiteListed;
+		// }
+	}
+	return false;
+}
+
+function getCountryList()
+{
+	$conn = connectDB();
+	$q1 = "SELECT * FROM country";
+	$stmt1 = $conn->prepare($q1);	
+	$stmt1->execute();
+	$result1 = $stmt1->get_result();
+
+	// if ($result1->num_rows > 0) {
+		$datas = $result1->fetch_assoc();
+		$whiteListed = [
+			'customer_id' => $datas['customer_id'],
+			'customer_email' => $datas['customer_email'],
+			'customer_name' => $datas['customer_name'],
+			'customer_phone' => $datas['customer_phone'],
+			'customer_username' => $datas['customer_username'],
+			'customer_country_id' => $datas['customer_country_id'],
+		];
+		// print_r($datas);
+		// die();
+		return $whiteListed;
+	// }
+}
+
+function currentBalance($customer_id)
+{
+	if ($customer_id) {
+		$conn = connectDB();
+		$q1 = "SELECT SUM(transaction_amount) AS transaction_amount FROM transactions WHERE to_customer_id=? AND transaction_type='diposit' OR transaction_type='transfer' ";
+		$stmt1 = $conn->prepare($q1);
+		$stmt1->bind_param('i',$userId);
+		$stmt1->execute();
+		$result1 = $stmt1->get_result();
+
+		$datas = $result1->fetch_assoc();
+		$whiteListed = [
+			'transaction_amount' => $datas['transaction_amount'],
+			'customer_id' => $customer_id,
+		];
+
+		return $whiteListed;
+	}
+}
+
+function transfer($from_id, $to_id, $amount)
+{
+	if ($from && $to && $amount) {
+		$from_user_data = getUserData($from_id);
+		$to_user_data = getUserData($to_id);
+		if ($from_user_data['customer_country_id']>0 && $to_user_data['customer_country_id']>0) {
+			$conn = connectDB();
+			$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, from_customer_id, to_customer_id, transaction_amount, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?)");
+			$stmt->bind_param("siiiiiis", $transaction_type, $from_account_id, $to_account_id, $balance_amount, $from_user_country_id, $to_user_country_id, $transaction_charge,  $transaction_date_time);
+
+			$transaction_type = "transfer";
+			$from_account_id = $from_id;
+			$to_account_id = $to_id;
+			$balance_amount = $amount;
+			$from_user_data = $from_user_data['customer_country_id'];
+			$to_user_country_id = $to_user_data['customer_country_id'];
+			$transaction_charge = 0;
+			$transaction_date_time = date('Y-m-d H:i:s');
+
+			if ($stmt->execute()) {
+				return [true];
+			}
+		}else{
+			return [false, "Country is empty in profile!"];
+		}
+	}
+
+	return [false];
+}
+
+
 
 
 

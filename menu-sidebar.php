@@ -5,16 +5,16 @@
         <div class="page-title sidebar-title d-flex">
             <div class="align-self-center me-auto">
                 <p class="color-highlight">Welcome Back</p>
-                <h1>Enabled</h1>
+                <h1>PAYSUM</h1>
             </div>
             <div class="align-self-center ms-auto">
-                <a href="#"
+                <!-- <a href="#"
                 data-bs-toggle="dropdown"
                 class="icon gradient-blue shadow-bg shadow-bg-s rounded-m">
                     <img src="images/pictures/25s.jpg" width="45" class="rounded-m" alt="img">
-                </a>
+                </a> -->
                 <!-- Menu Title Dropdown Menu-->
-                <div class="dropdown-menu">
+                <!-- <div class="dropdown-menu">
                     <div class="card card-style shadow-m mt-1 me-1">
                         <div class="list-group list-custom list-group-s list-group-flush rounded-xs px-3 py-1">
                             <a href="page-wallet.html" class="list-group-item">
@@ -35,7 +35,7 @@
                             </a>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -43,7 +43,7 @@
 
         <!-- Main Menu List-->
         <div class="list-group list-custom list-menu-large">
-            <a href="index-waves.html" id="nav-welcome" class="list-group-item">
+            <!-- <a href="index-waves.html" id="nav-welcome" class="list-group-item">
                 <i class="bi bg-red-dark shadow-bg shadow-bg-xs bi-heart-fill"></i>
                 <div>Welcome</div>
                 <i class="bi bi-chevron-right"></i>
@@ -72,7 +72,7 @@
                 <i class="bi bg-brown-dark shadow-bg shadow-bg-xs bi-gear-wide-connected"></i>
                 <div>Components</div>
                 <i class="bi bi-chevron-right"></i>
-            </a>
+            </a> -->
 			<a data-bs-toggle="offcanvas" data-bs-target="#menu-highlights" href="#" class="list-group-item">
 				<i class="bi bg-magenta-dark shadow-bg shadow-bg-xs bi-droplet"></i>
 				<div>Color Theme</div>
@@ -92,7 +92,7 @@
         <div class="divider divider-margins mb-3 opacity-50"></div>
 
         <!-- Quick Actions Icons-->
-        <div class="content pt-1">
+        <!-- <div class="content pt-1">
             <div class="d-flex text-center">
                 <div class="me-auto">
                     <a href="page-payment-transfer.html" class="icon icon-s rounded-s gradient-red shadow-bg shadow-bg-xs"><i class="font-16 color-white bi bi-arrow-up"></i></a>
@@ -107,7 +107,7 @@
                     <h6 class="font-11 font-400 opacity-70 mb-n1 pt-2">Exchange</h6>
                 </div>
             </div>
-        </div>
+        </div> -->
 
 
         <div class="divider divider-margins opacity-50"></div>
@@ -134,6 +134,6 @@
 
         <div class="divider divider-margins opacity-50"></div>
         <!-- Menu Copyright -->
-        <p class="px-3 font-9 opacity-30 color-theme mt-n3">Copyright <span class="copyright-year"></span>. Made with <i class="bi bi-heart-fill color-red-dark px-1"></i> by Enabled</p>
+        <p class="px-3 font-9 opacity-30 color-theme mt-n3">Copyright <span class="copyright-year"></span>. Made with <i class="bi bi-heart-fill color-red-dark px-1"></i> by CRISIS</p>
     </div>
 </div>

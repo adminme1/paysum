@@ -9,7 +9,7 @@ var CACHE_NAME = APP_NAME + '-' + APP_VER;
 // Leave REQUIRED_FILES = [] to disable offline.
 var REQUIRED_FILES = [
 	// HTML Files
-	'index.html',
+	'index.php',
 	'component-accordions.html',
 	'component-actions.html',
 	'component-add-to-home.html',
