@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 06, 2022 at 03:40 AM
+-- Generation Time: Aug 10, 2022 at 11:17 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.1
 
@@ -25,13 +25,49 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `accounts`
+--
+
+CREATE TABLE `accounts` (
+  `account_id` int(11) NOT NULL,
+  `country_id` int(11) NOT NULL,
+  `account_name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `accounts`
+--
+
+INSERT INTO `accounts` (`account_id`, `country_id`, `account_name`) VALUES
+(1, 1, 'bKash'),
+(2, 1, 'Nagad'),
+(3, 1, 'Bank_BD'),
+(4, 2, 'Paytm'),
+(5, 2, 'UPI'),
+(6, 1, 'Paysum Account_BD'),
+(7, 2, 'Paysum Account_INDIA');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `country`
 --
 
 CREATE TABLE `country` (
   `country_id` int(11) NOT NULL,
-  `country_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL
+  `country_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `country_currency` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `country`
+--
+
+INSERT INTO `country` (`country_id`, `country_name`, `country_currency`) VALUES
+(1, 'Bangladesh', 'BDT'),
+(2, 'India', 'INR'),
+(3, 'Pakistan', 'PKR'),
+(4, 'Australia', 'AUD');
 
 -- --------------------------------------------------------
 
@@ -58,7 +94,8 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`customer_id`, `customer_name`, `customer_dob`, `customer_phone`, `customer_gender`, `customer_address`, `customer_country_id`, `customer_email`, `customer_username`, `customer_password`, `registration_datetime`) VALUES
-(1, NULL, NULL, NULL, NULL, NULL, NULL, 'rokanchowdhury@ymail.com', 'rokan', '12345678', '2022-08-04 15:56:00');
+(1, NULL, NULL, NULL, NULL, NULL, 1, 'rokanchowdhury@ymail.com', 'rokan', '12345678', '2022-08-04 15:56:00'),
+(2, NULL, NULL, NULL, NULL, NULL, 2, 'testone@gmail.com', 'testone', '12345678', '2022-08-09 23:05:39');
 
 -- --------------------------------------------------------
 
@@ -68,10 +105,11 @@ INSERT INTO `customers` (`customer_id`, `customer_name`, `customer_dob`, `custom
 
 CREATE TABLE `transactions` (
   `transaction_id` int(11) NOT NULL,
-  `transaction_type` enum('diposit','transfer','withdraw') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'diposit, withdraw, transfer',
+  `transaction_type` enum('deposit','transfer','withdraw') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'deposit, withdraw, transfer',
   `from_customer_id` int(11) NOT NULL,
   `to_customer_id` int(11) NOT NULL,
   `transaction_amount` int(11) NOT NULL,
+  `transaction_amount_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `transaction_from_country_id` int(11) NOT NULL,
   `transaction_to_country_id` int(11) NOT NULL,
   `transaction_charge` int(11) NOT NULL,
@@ -79,8 +117,28 @@ CREATE TABLE `transactions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`transaction_id`, `transaction_type`, `from_customer_id`, `to_customer_id`, `transaction_amount`, `transaction_amount_type`, `transaction_from_country_id`, `transaction_to_country_id`, `transaction_charge`, `transaction_date_time`) VALUES
+(1, 'deposit', 1, 1, 1000, 'BDT', 1, 1, 0, '2022-08-10 15:38:28'),
+(2, 'deposit', 6, 1, 200, 'BDT', 1, 1, 0, '2022-08-10 15:53:23'),
+(3, 'deposit', 4, 2, 500, 'INR', 2, 2, 0, '2022-08-10 15:56:32'),
+(4, 'deposit', 3, 1, 300, 'BDT', 1, 1, 0, '2022-08-10 16:15:49'),
+(5, 'withdraw', 1, 1, 100, 'BDT', 1, 1, 0, '2022-08-11 00:53:49'),
+(6, 'transfer', 1, 2, 100, 'BDT', 1, 2, 0, '2022-08-11 01:31:17'),
+(7, 'transfer', 2, 1, 100, 'INR', 2, 1, 0, '2022-08-11 01:36:10'),
+(8, 'transfer', 1, 2, 300, 'BDT', 1, 2, 0, '2022-08-11 01:43:13');
+
+--
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `accounts`
+--
+ALTER TABLE `accounts`
+  ADD PRIMARY KEY (`account_id`);
 
 --
 -- Indexes for table `country`
@@ -95,20 +153,38 @@ ALTER TABLE `customers`
   ADD PRIMARY KEY (`customer_id`);
 
 --
+-- Indexes for table `transactions`
+--
+ALTER TABLE `transactions`
+  ADD PRIMARY KEY (`transaction_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `accounts`
+--
+ALTER TABLE `accounts`
+  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `country`
 --
 ALTER TABLE `country`
-  MODIFY `country_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `country_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `transactions`
+--
+ALTER TABLE `transactions`
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

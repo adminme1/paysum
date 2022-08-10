@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
            <div class="page-title d-flex">
                <div class="align-self-center me-auto">
                    <p class="color-white opacity-50 header-date"></p>
-                   <h1 class="color-white">PayApp</h1>
+                   <h1 class="color-white">PAYSUM</h1>
                </div>
                <div class="align-self-center ms-auto">
                    <a href="#"
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
     <!-- Main Sidebar Menu -->
     <div id="menu-sidebar"
         data-menu-active="nav-pages"
-        data-menu-load="menu-sidebar.html"
+        data-menu-load="menu-sidebar.php"
         class="offcanvas offcanvas-start offcanvas-detached rounded-m">
     </div>
 	

@@ -19,6 +19,26 @@ function connectDB()
 	return $conn;
 }
 
+
+function getRates($file='inc/rates.json')
+{
+	$json = file_get_contents($file);
+  
+	// Decode the JSON file
+	$json_data = json_decode($json,true);
+	$rates = $json_data['rates'];
+
+	// Display data
+	return $rates;
+}
+
+function convertRate($amount, $currencyType, $convertTo='USD')
+{
+	$rates = getRates();
+	$currencyTypeAmount = $rates[$currencyType]; //1 USD = 93.*** BDT
+	return ["amount"=>round(($amount / $currencyTypeAmount), 2), "type"=>$convertTo];
+}
+
 function isExists($field, $value)
 {
 	if ($field && $value) {
@@ -186,18 +206,30 @@ function getAccountByCountryId($countryId)
 function currentBalance($customer_id)
 {
 	if ($customer_id) {
-		$conn = connectDB();
-		$q1 = "SELECT SUM(transaction_amount) AS transaction_amount FROM transactions WHERE to_customer_id=? AND transaction_type='deposit' OR transaction_type='transfer' ";
-		$stmt1 = $conn->prepare($q1);
+		$conn1 = connectDB();
+		$conn2 = connectDB();
+		$q1 = "SELECT SUM(transaction_amount) AS transaction_amount FROM transactions WHERE to_customer_id=? AND (transaction_type='deposit' OR transaction_type='transfer') ";
+		$q2 = "SELECT SUM(transaction_amount) AS transaction_amount FROM transactions WHERE from_customer_id=? AND (transaction_type='withdraw' OR transaction_type='transfer') ";
+		$stmt1 = $conn1->prepare($q1);
+		$stmt2 = $conn2->prepare($q2);
 		$stmt1->bind_param('i',$customer_id);
+		$stmt2->bind_param('i',$customer_id);
 		$stmt1->execute();
+		$stmt2->execute();
 		$result1 = $stmt1->get_result();
+		$result2 = $stmt2->get_result();
 
-		$datas = $result1->fetch_assoc();
+		$inBalance = $result1->fetch_assoc();
+
+		$outBalance = $result2->fetch_assoc();
+		$inBalance = ($inBalance['transaction_amount'])?$inBalance['transaction_amount']:0;
+		$outBalance = ($outBalance['transaction_amount'])?$outBalance['transaction_amount']:0;
 		// echo "$customer_id";
-		// print_r($datas);
+		// var_dump($inBalance);
+		// var_dump($outBalance);
+
 		$whiteListed = [
-			'balance' => ($datas['transaction_amount'])?$datas['transaction_amount']:0,
+			'balance' => $inBalance-$outBalance,
 			'customer_id' => $customer_id,
 		];
 
@@ -230,20 +262,45 @@ function deposit($fromAccountId, $toAccountId, $depositAmount, $currencyType)
 
 }
 
-function transfer($from_id, $to_id, $amount)
+function withdraw($toAccountId, $fromAccountId, $withdrawAmount, $currencyType)
 {
-	if ($from && $to && $amount) {
+	$from_user_data = getUserData($fromAccountId);
+	$accountDetails = getAccountByAccountId($toAccountId);
+	$conn = connectDB();
+	$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, from_customer_id, to_customer_id, transaction_amount, transaction_amount_type, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	$stmt->bind_param("siiisiiis", $transaction_type, $from_account_id, $to_account_id, $balance_amount, $transaction_amount_type, $from_user_country_id, $to_user_country_id, $transaction_charge, $transaction_date_time);
+
+	$transaction_type = "withdraw";
+	$from_account_id = $fromAccountId;
+	$to_account_id = $toAccountId;
+	$balance_amount = $withdrawAmount;
+	$transaction_amount_type = $currencyType;
+	$from_user_country_id = $from_user_data['customer_country_id'];
+	$to_user_country_id = $accountDetails['country_id'];
+	$transaction_charge = 0;
+	$transaction_date_time = date('Y-m-d H:i:s');
+
+	if ($stmt->execute()) {
+		return [true];
+	}
+	return [false];
+}
+
+function transfer($from_id, $to_id, $amount, $currencyType)
+{
+	if ($from_id && $to_id && $amount && $currencyType) {
 		$from_user_data = getUserData($from_id);
 		$to_user_data = getUserData($to_id);
 		if ($from_user_data['customer_country_id']>0 && $to_user_data['customer_country_id']>0) {
 			$conn = connectDB();
-			$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, from_customer_id, to_customer_id, transaction_amount, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?)");
-			$stmt->bind_param("siiiiiis", $transaction_type, $from_account_id, $to_account_id, $balance_amount, $from_user_country_id, $to_user_country_id, $transaction_charge,  $transaction_date_time);
+			$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, from_customer_id, to_customer_id, transaction_amount, transaction_amount_type, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("siiisiiis", $transaction_type, $from_account_id, $to_account_id, $balance_amount, $transaction_amount_type, $from_user_country_id, $to_user_country_id, $transaction_charge, $transaction_date_time);
 
 			$transaction_type = "transfer";
 			$from_account_id = $from_id;
 			$to_account_id = $to_id;
 			$balance_amount = $amount;
+			$transaction_amount_type = $currencyType;
 			$from_user_country_id = $from_user_data['customer_country_id'];
 			$to_user_country_id = $to_user_data['customer_country_id'];
 			$transaction_charge = 0;
@@ -269,11 +326,11 @@ function getTransactions($customerId, $transaction_id = null){
 	$conn = connectDB();
 	$transactions = [];
 
-	$q1 = "SELECT * FROM transactions WHERE from_customer_id='$customerId' OR to_customer_id='$customerId'";
+	$q1 = "SELECT * FROM transactions WHERE from_customer_id='$customerId' OR to_customer_id='$customerId' ORDER BY transaction_date_time DESC";
 	$result1 = $conn->query($q1);
 
 	if ($transaction_id) {
-		$q1 = "SELECT * FROM transactions WHERE transaction_id=? AND (from_customer_id=? OR to_customer_id=?)";
+		$q1 = "SELECT * FROM transactions WHERE transaction_id=? AND (from_customer_id=? OR to_customer_id=?) ORDER BY transaction_date_time DESC";
 		$stmt1 = $conn->prepare($q1);
 		$stmt1->bind_param('iii', $transaction_id, $customerId, $customerId);
 		$stmt1->execute();

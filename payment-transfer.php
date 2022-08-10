@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
         $_SESSION['success'] = "Transfer successfull!";
         header("location:activity.php");
       }else{
-        $_SESSION['errorsDB'] = "Failed to create account!";
+        $_SESSION['error'] = "Failed to create account!";
       }
     }
   }
