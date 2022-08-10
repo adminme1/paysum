@@ -7,6 +7,36 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
 }
 
 $title = "Wallet";
+$customer_id = $_SESSION['userData']['customer_id'];
+$customerData = getUserData($customer_id);
+
+$countryAccounts =getAccountByCountryId($customerData['customer_country_id']);
+$countryData = getCountryData($customerData['customer_country_id']);
+// var_dump($currentBalance);
+// exit();
+?>
+
+<?php
+if ($_SERVER['REQUEST_METHOD']=="POST") {
+    if ($_POST['formType']=="deposit") {
+        if (!empty($_POST['depositFrom']) && !empty($_POST['depositAmount'])) {
+            $customer_id= $_SESSION['userData']['customer_id'];
+            $deposited = deposit($_POST['depositFrom'], $customer_id, $_POST['depositAmount'], $countryData['country_currency']);
+            $_SESSION['success']= "Deposit successfull from ".getAccountByAccountId($_POST['depositFrom'])['account_name'];
+        }else{
+            $_SESSION['error'] = "Required filed is empty.";
+        }
+    }else if ($_POST['formType']=="withdraw") {
+        if (!empty($_POST['withdrawVia']) && !empty($_POST['withdrawAmount'])) {
+            $withdrawed = withdraw($_POST['depositFrom'], $customer_id, $_POST['depositAmount'], $countryData['country_currency']);
+            $_SESSION['success']= "Withdraw successfull from ".getAccountByAccountId($_POST['withdrawVia'])['account_name'];
+        }else{
+            $_SESSION['error'] = "Required filed is empty.";
+        }
+    }
+}
+$currentBalance = currentBalance($customerData['customer_id'])['balance'];
+$transactions = getTransactions($customerData['customer_id']);
 ?>
 
 <?php require_once 'inc/header.inc.php'; ?>
@@ -55,7 +85,7 @@ $title = "Wallet";
                         <h1 class="font-13 my-n1">
                             <a class="color-theme" data-bs-toggle="collapse" href="#balance1" aria-controls="balance1">Click for Balance</a>
                         </h1>
-                        <div class="collapse" id="balance1"><h2 class="color-theme font-26">$65,500</h2></div>
+                        <div class="collapse" id="balance1"><h2 class="color-theme font-26"><?=$countryData['country_currency']?> <?=$currentBalance?></h2></div>
                     </div>
                 </div>
                 <strong class="card-top no-click font-12 p-3 color-white font-monospace">Company Account</strong>
@@ -89,8 +119,57 @@ $title = "Wallet";
         <!-- Card Stack Button / shows when deployed -->
         <a href="#" class="disabled btn-stack-click btn mx-3 mb-4 btn-full gradient-highlight shadow-bg shadow-bg-xs">Close my Wallet</a>
 
+<?php if (isset($_SESSION['success']) && !empty($_SESSION['success'])) { ?>
+<!--Account Activity Notification-->
+<div class="alert p-0 alert-dismissible fade show mb-n3" role="alert">
+    <div class="card card-style gradient-green shadow-bg shadow-bg-s">
+        <div class="content">
+
+                <div class="d-flex">
+                    <div class="align-self-center">
+                        <h1 class="mb-0 font-40"><i class="bi bi-check-circle color-white pe-3"></i></h1>
+                    </div>
+                    <div class="align-self-center">
+                        <h5 class="color-white font-700 mb-0 mt-0">
+                            <?=$_SESSION['success']?>
+                        </h5>
+                    </div>
+                    <div class="align-self-center ms-auto">
+                        <span data-bs-dismiss="alert" class="icon-l"><i class="bi bi-x font-20 pt-1 d-block color-white"></i></span>
+                    </div>
+                </div>
+                
+        </div>
+    </div>
+</div>
+<?php unset($_SESSION['success']); } ?>
+<?php if (isset($_SESSION['error']) && !empty($_SESSION['error'])) { ?>
+<!--Account Activity Notification-->
+<div class="alert p-0 alert-dismissible fade show mb-n3" role="alert">
+    <div class="card card-style gradient-red shadow-bg shadow-bg-s">
+        <div class="content">
+
+                <div class="d-flex">
+                    <div class="align-self-center">
+                        <h1 class="mb-0 font-40"><i class="bi bi-x-circle color-white pe-3"></i></h1>
+                    </div>
+                    <div class="align-self-center">
+                        <h5 class="color-white font-700 mb-0 mt-0">
+                            <?=$_SESSION['error']?>
+                        </h5>
+                    </div>
+                    <div class="align-self-center ms-auto">
+                        <span data-bs-dismiss="alert" class="icon-l"><i class="bi bi-x font-20 pt-1 d-block color-white"></i></span>
+                    </div>
+                </div>
+                
+        </div>
+    </div>
+</div>
+<?php  unset($_SESSION['error']); } ?>
         <!-- Tabs-->
         <div class="card card-style">
+            
             <div class="content mb-0">
                 
                 <!-- Tab Wrapper-->
@@ -143,26 +222,67 @@ $title = "Wallet";
                     </div> -->
 
                     <div class="collapse show" id="tab-6" data-bs-parent="#tab-group-2">
-                        <div class="form-custom form-label form-icon mt-3">
-                            <i class="bi bi-currency-dollar font-16"></i>
-                            <input type="text" name="to_customer_username" class="form-control rounded-xs" id="c2" placeholder="Deposit Amount"/>
-                            <label for="c2" class="color-highlight">Deposit Amount</label>
-                            <span>(required)</span>
-                        </div>
-                        <div class="pb-2"></div>
-                        <div class="form-custom form-label form-icon mt-3">
-                            <i class="bi bi-caret-up-fill font-16"></i>
-                            <select class="form-select">
-                                <option>pAccount</option>
-                                <option>bKash</option>
-                                <option>Bank</option>
-                            </select>
-                        </div>
+                        <form action="" method="post">
+
+                            <input type="hidden" name="formType" value="deposit">
+                            <div class="form-custom form-label form-icon mt-3">
+                                <i class="bi bi-caret-up-fill font-16"></i>
+                                <select class="form-select" id="from-2" name="depositFrom">
+                                    <?php
+                                    foreach ($countryAccounts as $account) {
+                                        echo "<option value='".$account['account_id']."'>".$account['account_name']."</option>";
+                                    }
+                                    ?>
+                                    <!-- <option>pAccount</option>
+                                    <option>bKash</option>
+                                    <option>Bank</option> -->
+                                </select>
+                                <label for="from-2" class="color-highlight">Deposit From</label>
+                            </div>
+                            <div class="pb-2"></div>
+                            <div class="form-custom form-label form-icon mt-3">
+                                <!-- <i class="bi bi-currency-dollar font-16"></i> -->
+                                <input type="text" name="depositAmount" class="form-control rounded-xs" id="c2" placeholder="Deposit Native Amount"/>
+                                <label for="c2" class="color-highlight">Deposit Native Amount</label>
+                                <span><?=$countryData['country_currency']?></span>
+                            </div>
+                            <div class="pb-2"></div>
+                            
+                            <button type="submit" class="btn btn-full btn-info">Deposit</button>
+                        </form>
+                        
 
                     </div>
 
                     <div class="collapse" id="tab-7" data-bs-parent="#tab-group-2">
-                        
+                        <form action="" method="post">
+
+                            <input type="hidden" name="formType" value="withdraw">
+                            <div class="form-custom form-label form-icon mt-3">
+                                <i class="bi bi-caret-up-fill font-16"></i>
+                                <select class="form-select" id="from-2" name="withdrawVia">
+                                    <?php
+                                    foreach ($countryAccounts as $account) {
+                                        echo "<option value='".$account['account_id']."'>".$account['account_name']."</option>";
+                                    }
+                                    ?>
+                                    <!-- <option>pAccount</option>
+                                    <option>bKash</option>
+                                    <option>Bank</option> -->
+                                </select>
+                                <label for="from-2" class="color-highlight">Withdraw Via</label>
+                            </div>
+                            <div class="pb-2"></div>
+                            <div class="form-custom form-label form-icon mt-3">
+                                <!-- <i class="bi bi-currency-dollar font-16"></i> -->
+                                <input type="text" name="withdrawAmount" class="form-control rounded-xs" id="c2" placeholder="Withdraw Native Currency"/>
+                                <label for="c2" class="color-highlight">Enter Native Currency</label>
+                                <span><?=$countryData['country_currency']?></span>
+                            </div>
+                            <div class="pb-2"></div>
+                            
+                            <button type="submit" class="btn btn-full btn-info">Withdraw</button>
+                        </form>
                     </div>
                     
                     <!-- Tab 2-->
@@ -176,47 +296,58 @@ $title = "Wallet";
                                 <option value="3">Last 6 Months</option>
                             </select>
                         </div>
+
                         <div class="list-group list-custom list-group-m list-group-flush rounded-xs">
+                            <?php
+                            foreach ($transactions as $transaction) { 
+
+                                if ($transaction['transaction_type']=="deposit" && $transaction['to_customer_id']==$customer_id) {
+
+                            ?>
                             <a href="#" class="list-group-item">
                                 <i class="has-bg gradient-green color-white rounded-xs bi bi-cash-coin"></i>
-                                <div><strong>Savings</strong><span>14  Transactions</span></div>
+                                <div><strong>Deposit</strong><span> From <?=getAccountByAccountId($transaction['from_customer_id'])['account_name']?></span> </div>
                                 <span class="badge bg-transparent color-theme text-end font-15">
-                                   $414<br>
-                                   <em class="fst-normal font-12 opacity-30">13.5%</em>
+                                   <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                                   <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
                                 </span>
                             </a>
-                            <a href="#" class="list-group-item">
-                                <i class="has-bg gradient-yellow color-white rounded-xs bi bi-droplet"></i>
-                                <div><strong>Utilities</strong><span>11 Transactions</span></div>
-                                <span class="badge bg-transparent color-theme text-end font-15">
-                                    $631<br>
-                                    <em class="fst-normal font-12 opacity-30">20.3%</em>
-                                </span>
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <i class="has-bg gradient-blue color-white rounded-xs bi bi-bag"></i>
-                                <div><strong>Shopping</strong><span>23 Transactions</span></div>
-                                <span class="badge bg-transparent color-theme text-end font-15">
-                                    $950<br>
-                                    <em class="fst-normal font-12 opacity-30">45.7%</em>
-                                </span>
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <i class="has-bg gradient-red color-white rounded-xs bi bi-gear"></i>
-                                <div><strong>Construction</strong><span>34 Transactions</span></div>
-                                <span class="badge bg-transparent color-theme text-end font-15">
-                                    $315<br>
-                                    <em class="fst-normal font-12 opacity-30">19.5%</em>
-                                </span>
-                            </a>
-                            <a href="#" class="list-group-item">
-                                <i class="has-bg gradient-magenta color-white rounded-xs bi bi-shuffle"></i>
-                                <div><strong>Other Costs</strong><span>15 Transactions</span></div>
-                                <span class="badge bg-transparent color-theme text-end font-15">
-                                    $530<br>
-                                    <em class="fst-normal font-12 opacity-30">35.5%</em>
-                                </span>
-                            </a>
+
+                            <?php }else if ($transaction['transaction_type']=="withdraw" && $transaction['from_customer_id']==$customer_id) { ?>
+                                <a href="#" class="list-group-item">
+                                    <i class="has-bg gradient-green color-white rounded-xs bi bi-cash-coin"></i>
+                                    <div><strong>Withdraw</strong><span> Via <?=getAccountByAccountId($transaction['to_customer_id'])['account_name']?></span> </div>
+                                    <span class="badge bg-transparent color-theme text-end font-15">
+                                       <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                                       <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                                    </span>
+                                </a>
+
+                           <?php }else if ($transaction['transaction_type']=="transfer") {
+                            $from = "";
+                            $to = "";
+                            if ($transaction['from_customer_id']==$customer_id) {
+                                $from = "You";
+                                $to = getUserData($transaction['from_customer_id'])['customer_username'];
+                            }else{
+                                $from = getUserData($transaction['to_customer_id'])['customer_username'];
+                                $to = "You";
+                            }
+                            ?>
+                                <a href="#" class="list-group-item">
+                                    <i class="has-bg gradient-magenta color-white rounded-xs bi bi-shuffle"></i>
+                                    <div><strong>Transfer</strong><span> From <?=$from?> To <?=$to?> </span> </div>
+                                    <span class="badge bg-transparent color-theme text-end font-15">
+                                       <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                                       <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                                    </span>
+                                </a>
+
+                           <?php } ?>
+
+
+
+                        <?php } ?>
                         </div>
                     </div>
 
@@ -312,35 +443,7 @@ $title = "Wallet";
     <!-- Off Canvas and Menu Elements-->
     <!-- Always outside the Page Content-->
 
-    <!-- Main Sidebar Menu -->
-    <div id="menu-sidebar"
-        data-menu-active="nav-pages"
-        data-menu-load="menu-sidebar.html"
-        class="offcanvas offcanvas-start offcanvas-detached rounded-m">
-    </div>
-	
-	<!-- Highlights Menu -->
-	<div id="menu-highlights"
-		data-menu-load="menu-highlights.html"
-		class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-	</div>
-
-    <!-- Add Card -->
-    <div id="menu-add-card"
-        data-menu-load="menu-add-card.html"
-        class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-    </div>
-    
-    <!-- Menu Card More -->
-    <div id="menu-card-more"
-        data-menu-load="menu-card-settings.html"
-        class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-    </div>
-    
-    <!-- Notifications Bell -->
-    <div id="menu-notifications" data-menu-load="menu-notifications.html"
-        class="offcanvas offcanvas-top offcanvas-detached rounded-m">
-    </div>
+    <?php require_once 'inc/offscreen.inc.php'; ?>
 
 
 

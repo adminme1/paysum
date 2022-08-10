@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 
     $toCustomerData = getUserData($to_customer_username, "customer_username");
     $fromCustomerData = getUserData($from_user_id);
-    $fromAccountBalance = currentBalance($from_user_id);
+    $fromAccountBalance = currentBalance($from_user_id)['balance'];
 
     if ($toCustomerData==false) {
       $_SESSION['errors']['username'] = "To account not exists!";

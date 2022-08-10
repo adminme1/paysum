@@ -52,6 +52,7 @@ function login($data)
 			$whiteListed = [
 				'customer_id' => $datas['customer_id'],
 				'customer_email' => $datas['customer_email'],
+				'customer_country_id' => $datas['customer_country_id'],
 			];
 			// print_r($datas);
 			// die();
@@ -126,38 +127,107 @@ function getCountryList()
 
 	// if ($result1->num_rows > 0) {
 		$datas = $result1->fetch_assoc();
-		$whiteListed = [
-			'customer_id' => $datas['customer_id'],
-			'customer_email' => $datas['customer_email'],
-			'customer_name' => $datas['customer_name'],
-			'customer_phone' => $datas['customer_phone'],
-			'customer_username' => $datas['customer_username'],
-			'customer_country_id' => $datas['customer_country_id'],
-		];
+
 		// print_r($datas);
 		// die();
-		return $whiteListed;
+		return $datas;
 	// }
+}
+
+
+function getCountryData($country_id)
+{
+	$conn = connectDB();
+	$q1 = "SELECT * FROM country WHERE country_id=? ";
+	$stmt1 = $conn->prepare($q1);
+	$stmt1->bind_param('i',$country_id);
+	$stmt1->execute();
+	$result1 = $stmt1->get_result();
+
+	$datas = $result1->fetch_assoc();
+
+	return $datas;
+}
+
+function getAccountByAccountId($accountId)
+{
+	$conn = connectDB();
+	$q1 = "SELECT * FROM accounts WHERE account_id=? ";
+	$stmt1 = $conn->prepare($q1);
+	$stmt1->bind_param('i',$accountId);
+	$stmt1->execute();
+	$result1 = $stmt1->get_result();
+
+	$datas = $result1->fetch_assoc();
+
+	return $datas;
+
+}
+
+function getAccountByCountryId($countryId)
+{
+	$conn = connectDB();
+	$q1 = "SELECT * FROM accounts WHERE country_id=? ";
+	$stmt1 = $conn->prepare($q1);
+	$stmt1->bind_param('i',$countryId);
+	$stmt1->execute();
+	$result1 = $stmt1->get_result();
+
+	$datas = [];
+	while ($row = $result1->fetch_assoc()) {
+		$datas[] = $row;
+	}
+
+
+	return $datas;
+
 }
 
 function currentBalance($customer_id)
 {
 	if ($customer_id) {
 		$conn = connectDB();
-		$q1 = "SELECT SUM(transaction_amount) AS transaction_amount FROM transactions WHERE to_customer_id=? AND transaction_type='diposit' OR transaction_type='transfer' ";
+		$q1 = "SELECT SUM(transaction_amount) AS transaction_amount FROM transactions WHERE to_customer_id=? AND transaction_type='deposit' OR transaction_type='transfer' ";
 		$stmt1 = $conn->prepare($q1);
-		$stmt1->bind_param('i',$userId);
+		$stmt1->bind_param('i',$customer_id);
 		$stmt1->execute();
 		$result1 = $stmt1->get_result();
 
 		$datas = $result1->fetch_assoc();
+		// echo "$customer_id";
+		// print_r($datas);
 		$whiteListed = [
-			'transaction_amount' => $datas['transaction_amount'],
+			'balance' => ($datas['transaction_amount'])?$datas['transaction_amount']:0,
 			'customer_id' => $customer_id,
 		];
 
 		return $whiteListed;
 	}
+}
+
+function deposit($fromAccountId, $toAccountId, $depositAmount, $currencyType)
+{
+	$to_user_data = getUserData($toAccountId);
+	$accountDetails = getAccountByAccountId($fromAccountId);
+	$conn = connectDB();
+	$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, from_customer_id, to_customer_id, transaction_amount, transaction_amount_type, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	$stmt->bind_param("siiisiiis", $transaction_type, $from_account_id, $to_account_id, $balance_amount, $transaction_amount_type, $from_user_country_id, $to_user_country_id, $transaction_charge, $transaction_date_time);
+
+	$transaction_type = "deposit";
+	$from_account_id = $fromAccountId;
+	$to_account_id = $toAccountId;
+	$balance_amount = $depositAmount;
+	$transaction_amount_type = $currencyType;
+	$from_user_country_id = $accountDetails['country_id'];
+	$to_user_country_id = $to_user_data['customer_country_id'];
+	$transaction_charge = 0;
+	$transaction_date_time = date('Y-m-d H:i:s');
+
+	if ($stmt->execute()) {
+		return [true];
+	}
+	return [false];
+
 }
 
 function transfer($from_id, $to_id, $amount)
@@ -174,7 +244,7 @@ function transfer($from_id, $to_id, $amount)
 			$from_account_id = $from_id;
 			$to_account_id = $to_id;
 			$balance_amount = $amount;
-			$from_user_data = $from_user_data['customer_country_id'];
+			$from_user_country_id = $from_user_data['customer_country_id'];
 			$to_user_country_id = $to_user_data['customer_country_id'];
 			$transaction_charge = 0;
 			$transaction_date_time = date('Y-m-d H:i:s');
@@ -195,104 +265,43 @@ function transfer($from_id, $to_id, $amount)
 
 
 
-function getTransactions( $transaction_id = null){
+function getTransactions($customerId, $transaction_id = null){
 	$conn = connectDB();
-	$questions = [];
+	$transactions = [];
 
-	$q1 = "SELECT * FROM transactions";
+	$q1 = "SELECT * FROM transactions WHERE from_customer_id='$customerId' OR to_customer_id='$customerId'";
 	$result1 = $conn->query($q1);
 
-	if ($question_id) {
-		$question_id = htmlentities(trim(strip_tags(stripslashes($question_id))), ENT_NOQUOTES, "UTF-8");
-		$q1 = "SELECT * FROM questions WHERE question_id=?";
+	if ($transaction_id) {
+		$q1 = "SELECT * FROM transactions WHERE transaction_id=? AND (from_customer_id=? OR to_customer_id=?)";
 		$stmt1 = $conn->prepare($q1);
-		$stmt1->bind_param('i',$question_id);
+		$stmt1->bind_param('iii', $transaction_id, $customerId, $customerId);
 		$stmt1->execute();
 		$result1 = $stmt1->get_result();
 	}
 	
 
 	if ($result1->num_rows > 0) {
-
 		while($row1 = $result1->fetch_assoc()) {
-			$q2 = "SELECT * FROM questions_options WHERE question_id=?";
-			$stmt2 = $conn->prepare($q2);
-			$stmt2->bind_param('i',$row1['question_id']);
-			$stmt2->execute();
-			$result2 = $stmt2->get_result();
-			$options = [];
-			while ($row2 = $result2->fetch_assoc()) {
-				$options[]=$row2;
-			}
+			// $q2 = "SELECT * FROM transactions WHERE from_customer_id=? OR to_customer_id=?";
+			// $stmt2 = $conn->prepare($q2);
+			// $stmt2->bind_param('ii', $customerId, $customerId);
+			// $stmt2->execute();
+			// $result2 = $stmt2->get_result();
+			// while ($row2 = $result2->fetch_assoc()) {
+				$transactions[]=$row1;
+			// }
 
-			$currentDateTime = strtotime(date('Y-m-d H:i'));
-			$voteStartDateTime = strtotime(date('Y-m-d H:i', strtotime($row1['start_time'])));
-			$voteEndDateTime = strtotime(date('Y-m-d H:i', strtotime($row1['end_time'])));
 
-			if ($voteStartDateTime<=$currentDateTime) {
-				$row1['voteStart'] = true;
-			}else{
-				$row1['voteStart'] = false;
-			}
-
-			if ($voteEndDateTime<$currentDateTime) {
-				$row1['voteEnd'] = true;
-			}else{
-				$row1['voteEnd'] = false;
-			}
-			
-
-			$row1['options'] = $options;
-			$questions[] = $row1;
-			$stmt2->close();
 		}
 
 	}
 
-	if ($question_id) {
-		$stmt1->close();
-	}
-	$conn->close();
 
-	return $questions;
+	return $transactions;
 }
 
-function votes($question_id, $walletAddress = null)
-{
-	if ($question_id) {
-		$conn = connectDB();
 
-		$question_id = htmlentities(trim(strip_tags(stripslashes($question_id))), ENT_NOQUOTES, "UTF-8");
-		$q1 = "SELECT * FROM votes WHERE question_id=? ";
-		if ($walletAddress) {
-			$walletAddress = htmlentities(trim(strip_tags(stripslashes($walletAddress))), ENT_NOQUOTES, "UTF-8");
-			$q1 .= " AND voter_address=?";
-		}
-
-		$stmt1 = $conn->prepare($q1);
-		if ($walletAddress) {
-			$stmt1->bind_param('is', $question_id, $walletAddress);
-		}else{
-			$stmt1->bind_param('i', $question_id);
-		}
-		$stmt1->execute();
-		$result1 = $stmt1->get_result();
-		
-		
-		if ($walletAddress) {
-			$data = $result1->fetch_assoc();
-		}else{
-			$data = $result1->fetch_all(MYSQLI_ASSOC);
-		}
-
-		$stmt1->close();
-
-		$conn->close();
-		return $data;
-
-	}
-
-}
 
 
 function isTokenHolder($walletAddress){

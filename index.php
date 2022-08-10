@@ -66,7 +66,7 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                     <h3 class="font-16 mb-2">Recent Activity</h3>
                 </div>
                 <div class="align-self-center ms-auto">
-                    <a href="page-activity.html" class="font-12 pt-1">View All</a>
+                    <a href="activity.php" class="font-12 pt-1">View All</a>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
         <!-- Recent Activity Cards-->
         <div class="card card-style">
             <div class="content">
-                <a href="page-activity.html" class="d-flex py-1">
+                <a href="activity.php" class="d-flex py-1">
                     <div class="align-self-center">
                         <span class="icon rounded-s me-2 gradient-orange shadow-bg shadow-bg-s"><i class="bi bi-google color-white"></i></span>
                     </div>
@@ -88,7 +88,7 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                     </div>
                 </a>
                 <div class="divider my-2 opacity-50"></div>
-                <a href="page-activity.html" class="d-flex py-1">
+                <a href="activity.php" class="d-flex py-1">
                     <div class="align-self-center">
                         <span class="icon rounded-s me-2 gradient-green shadow-bg shadow-bg-s"><i class="bi bi-caret-up-fill color-white"></i></span>
                     </div>
@@ -102,7 +102,7 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                     </div>
                 </a>
                 <div class="divider my-2 opacity-50"></div>
-                <a href="page-activity.html" class="d-flex py-1">
+                <a href="activity.php" class="d-flex py-1">
                     <div class="align-self-center">
                         <span class="icon rounded-s me-2 gradient-yellow shadow-bg shadow-bg-s"><i class="bi bi-pie-chart-fill color-white"></i></span>
                     </div>
@@ -123,6 +123,8 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
 
     <!-- Off Canvas and Menu Elements-->
     <!-- Always outside the Page Content-->
+
+    <?php // require_once 'inc/offscreen.inc.php'; ?>
 
     <!-- Main Sidebar Menu -->
     <div id="menu-sidebar" data-menu-active="nav-welcome" data-menu-load="menu-sidebar.php"
