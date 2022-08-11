@@ -5,7 +5,14 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
     header("location: login.php");
     exit();
 }
+$customer_id = $_SESSION['userData']['customer_id'];
+$customerData = getUserData($customer_id);
 
+$countryAccounts =getAccountByCountryId($customerData['customer_country_id']);
+$countryData = getCountryData($customerData['customer_country_id']);
+
+$currentBalance = currentBalance($customerData['customer_id'])['balance'];
+$transactions = getTransactions($customerData['customer_id'], 4);
 ?>
 
 <?php require_once 'inc/header.inc.php'; ?>
@@ -33,11 +40,16 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                         <h1 class="font-13 my-n1">
                             <a class="color-theme" data-bs-toggle="collapse" href="#balance3" aria-controls="balance2">Click for Balance</a>
                         </h1>
-                        <div class="collapse" id="balance3"><h2 class="color-theme font-26">$26,315</h2></div>
+                        <div class="collapse" id="balance3">
+                            <h2 class="color-theme font-26"><?=$countryData['country_currency']?> <?=$currentBalance?></h2>
+                            <h2 class="color-theme font-26"><?php $convertedCurrency =  convertRate($currentBalance,$countryData['country_currency']);
+                            echo $convertedCurrency['type']." ".$convertedCurrency['amount'];
+                            ?></h2>
+                        </div>
                     </div>
                 </div>
                 <strong class="card-top no-click font-12 p-3 color-white font-monospace">Main Account</strong>
-                <strong class="card-bottom no-click p-3 font-12 text-start color-white font-monospace">1234 5678 1234 5661</strong>
+                <!-- <strong class="card-bottom no-click p-3 font-12 text-start color-white font-monospace">1234 5678 1234 5661</strong> -->
                 <div class="card-overlay bg-black opacity-50"></div>
             </div>
         </div>
@@ -46,7 +58,7 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
 
 
         <!-- Quick Actions -->
-        <div class="content py-2">
+        <!-- <div class="content py-2">
             <div class="d-flex text-center">
                 <div class="m-auto">
                     <a href="payments.php" class="icon icon-xxl rounded-m bg-theme shadow-m"><i class="font-28 color-green-dark bi bi-arrow-up-circle"></i></a>
@@ -57,8 +69,8 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                     <h6 class="font-13 opacity-80 font-500 mb-0 pt-2">Request</h6>
                 </div>
             </div>
-        </div>
-
+        </div> -->
+<br>
         <!-- Recent Activity Title-->
         <div class="content my-0 mt-n2 px-1">
             <div class="d-flex">
@@ -74,7 +86,73 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
         <!-- Recent Activity Cards-->
         <div class="card card-style">
             <div class="content">
-                <a href="activity.php" class="d-flex py-1">
+                <div class="list-group list-custom list-group-m list-group-flush rounded-xs">
+                    <?php
+                    foreach ($transactions as $transaction) { 
+
+                        if ($transaction['transaction_type']=="deposit" && $transaction['to_customer_id']==$customer_id) {
+
+                    ?>
+                    <a href="#" class="list-group-item">
+                        <i class="has-bg gradient-green color-white rounded-xs bi bi-cash-coin"></i>
+                        <div><strong>Deposit</strong><span> From <?=getAccountByAccountId($transaction['from_customer_id'])['account_name']?></span> </div>
+                        <span class="badge bg-transparent color-theme text-end font-15">
+                           <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                           <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                        </span>
+                    </a>
+
+                    <?php }else if ($transaction['transaction_type']=="withdraw" && $transaction['from_customer_id']==$customer_id) { ?>
+                        <a href="#" class="list-group-item">
+                            <i class="has-bg gradient-red color-white rounded-xs bi bi-cash-coin"></i>
+                            <div><strong>Withdraw</strong><span> Via <?=getAccountByAccountId($transaction['to_customer_id'])['account_name']?></span> </div>
+                            <span class="badge bg-transparent color-theme text-end font-15">
+                               <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                               <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                            </span>
+                        </a>
+
+                   <?php }else if ($transaction['transaction_type']=="transfer") {
+                    $from = "";
+                    $to = "";
+                    $suffix = "";
+                    $iconClass = "bi-suffle";
+                    $transactionAmountType = $transaction['transaction_amount_type'];
+                    $transactionAmount = $transaction['transaction_amount'];
+                    if ($transaction['from_customer_id']==$customer_id) {
+                        $from = "You";
+                        $to = getUserData($transaction['to_customer_id'])['customer_username'];
+                        $suffix = "Out";
+                        $iconClass = "bi-arrow-up";
+                    }else{
+                        $from = getUserData($transaction['from_customer_id'])['customer_username'];
+                        $to = "You";
+                        $suffix = "In";
+                        $iconClass = "bi-arrow-down";
+                        if ($transaction['transaction_amount_type']!= $countryData['country_currency']) {
+                            $convertedTransaction = convertRate($transactionAmount, $transactionAmountType, $countryData['country_currency']);
+                            $transactionAmountType = $convertedTransaction['type'];
+                            $transactionAmount = $convertedTransaction['amount'];
+                        }
+                    }
+                    ?>
+                        <a href="#" class="list-group-item">
+                            <i class="has-bg gradient-magenta color-white rounded-xs bi <?=$iconClass?>"></i>
+                            <div><strong>Transfer <?=$suffix?></strong><span> From <?=$from?> To <?=$to?> </span> </div>
+                            <span class="badge bg-transparent color-theme text-end font-15">
+                               <?=$transactionAmountType?> <?=$transactionAmount?> <br>
+                               <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                            </span>
+                        </a>
+
+                   <?php } ?>
+
+
+
+                <?php } ?>
+                </div>
+                        
+                <!-- <a href="activity.php" class="d-flex py-1">
                     <div class="align-self-center">
                         <span class="icon rounded-s me-2 gradient-orange shadow-bg shadow-bg-s"><i class="bi bi-google color-white"></i></span>
                     </div>
@@ -114,7 +192,7 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                         <h4 class="pt-1 mb-n1 color-green-dark">$950.00</h4>
                         <p class="mb-0 font-11">Wire Transfer</p>
                     </div>
-                </a>
+                </a> -->
             </div>
         </div>
 
@@ -142,19 +220,19 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
     </div>
 
     <!-- Transfer Friends Menu -->
-    <div id="menu-friends-transfer" data-menu-load="menu-friends-transfer.html"
+    <!-- <div id="menu-friends-transfer" data-menu-load="menu-friends-transfer.html"
         class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-    </div>
+    </div> -->
 
     <!-- Request Button Menu -->
-    <div id="menu-request" data-menu-load="menu-request.html"
+    <!-- <div id="menu-request" data-menu-load="menu-request.html"
         class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-    </div>
+    </div> -->
 
     <!-- Exchange Button Menu -->
-    <div id="menu-exchange" data-menu-load="menu-exchange.html"
+    <!-- <div id="menu-exchange" data-menu-load="menu-exchange.html"
         class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-    </div>
+    </div> -->
 
     <!-- Notifications Bell -->
     <div id="menu-notifications" data-menu-load="menu-notifications.html"

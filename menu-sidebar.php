@@ -125,7 +125,7 @@
                 <div>Account</div>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="page-signin-1.html" class="list-group-item">
+            <a href="logout.php" class="list-group-item">
                 <i class="bi bi-bar-chart-fill opacity-20 font-16"></i>
                 <div>Log Out</div>
                 <i class="bi bi-chevron-right"></i>

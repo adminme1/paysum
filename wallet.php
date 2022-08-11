@@ -126,7 +126,7 @@ $transactions = getTransactions($customerData['customer_id']);
                         </div>
                     </div>
                 </div>
-                <!-- <strong class="card-top no-click font-12 p-3 color-white font-monospace">Company Account</strong> -->
+                <strong class="card-top no-click font-12 p-3 color-white font-monospace">Main Account</strong>
                 <!-- <strong class="card-bottom no-click p-3 text-start color-white font-monospace">1234 5678 1234 5661</strong> -->
                 <!-- <strong class="card-bottom no-click p-3 text-end color-white font-monospace">08 / 2025</strong> -->
                 <div class="card-overlay bg-black opacity-50"></div>
@@ -404,6 +404,8 @@ $transactions = getTransactions($customerData['customer_id']);
                             $to = "";
                             $suffix = "";
                             $iconClass = "bi-suffle";
+                            $transactionAmountType = $transaction['transaction_amount_type'];
+                            $transactionAmount = $transaction['transaction_amount'];
                             if ($transaction['from_customer_id']==$customer_id) {
                                 $from = "You";
                                 $to = getUserData($transaction['to_customer_id'])['customer_username'];
@@ -414,13 +416,18 @@ $transactions = getTransactions($customerData['customer_id']);
                                 $to = "You";
                                 $suffix = "In";
                                 $iconClass = "bi-arrow-down";
+                                if ($transaction['transaction_amount_type']!= $countryData['country_currency']) {
+                                    $convertedTransaction = convertRate($transactionAmount, $transactionAmountType, $countryData['country_currency']);
+                                    $transactionAmountType = $convertedTransaction['type'];
+                                    $transactionAmount = $convertedTransaction['amount'];
+                                }
                             }
                             ?>
                                 <a href="#" class="list-group-item">
                                     <i class="has-bg gradient-magenta color-white rounded-xs bi <?=$iconClass?>"></i>
                                     <div><strong>Transfer <?=$suffix?></strong><span> From <?=$from?> To <?=$to?> </span> </div>
                                     <span class="badge bg-transparent color-theme text-end font-15">
-                                       <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                                       <?=$transactionAmountType?> <?=$transactionAmount?> <br>
                                        <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
                                     </span>
                                 </a>

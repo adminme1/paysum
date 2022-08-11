@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 10, 2022 at 11:17 PM
+-- Generation Time: Aug 11, 2022 at 11:28 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.1
 
@@ -45,7 +45,11 @@ INSERT INTO `accounts` (`account_id`, `country_id`, `account_name`) VALUES
 (4, 2, 'Paytm'),
 (5, 2, 'UPI'),
 (6, 1, 'Paysum Account_BD'),
-(7, 2, 'Paysum Account_INDIA');
+(7, 2, 'Paysum Account_INDIA'),
+(8, 4, 'Wise'),
+(9, 4, 'Osko'),
+(10, 4, 'Bank_Australia'),
+(11, 4, 'LinePay');
 
 -- --------------------------------------------------------
 
@@ -95,7 +99,8 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`customer_id`, `customer_name`, `customer_dob`, `customer_phone`, `customer_gender`, `customer_address`, `customer_country_id`, `customer_email`, `customer_username`, `customer_password`, `registration_datetime`) VALUES
 (1, NULL, NULL, NULL, NULL, NULL, 1, 'rokanchowdhury@ymail.com', 'rokan', '12345678', '2022-08-04 15:56:00'),
-(2, NULL, NULL, NULL, NULL, NULL, 2, 'testone@gmail.com', 'testone', '12345678', '2022-08-09 23:05:39');
+(2, NULL, NULL, NULL, NULL, NULL, 2, 'testone@gmail.com', 'testone', '12345678', '2022-08-09 23:05:39'),
+(3, NULL, NULL, NULL, NULL, NULL, 4, 'test3@gmail.com', 'test3', '12345678', '2022-08-12 01:11:10');
 
 -- --------------------------------------------------------
 
@@ -128,7 +133,9 @@ INSERT INTO `transactions` (`transaction_id`, `transaction_type`, `from_customer
 (5, 'withdraw', 1, 1, 100, 'BDT', 1, 1, 0, '2022-08-11 00:53:49'),
 (6, 'transfer', 1, 2, 100, 'BDT', 1, 2, 0, '2022-08-11 01:31:17'),
 (7, 'transfer', 2, 1, 100, 'INR', 2, 1, 0, '2022-08-11 01:36:10'),
-(8, 'transfer', 1, 2, 300, 'BDT', 1, 2, 0, '2022-08-11 01:43:13');
+(8, 'transfer', 1, 2, 300, 'BDT', 1, 2, 0, '2022-08-11 01:43:13'),
+(9, 'deposit', 10, 3, 200, 'AUD', 4, 4, 0, '2022-08-12 01:15:36'),
+(10, 'transfer', 3, 1, 20, 'AUD', 4, 1, 0, '2022-08-12 01:16:35');
 
 --
 -- Indexes for dumped tables
@@ -166,7 +173,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `country`
@@ -178,13 +185,13 @@ ALTER TABLE `country`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

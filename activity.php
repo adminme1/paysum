@@ -4,7 +4,14 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
     header("location: login.php");
     exit();
 }
+$title = "Activity";
+$customer_id = $_SESSION['userData']['customer_id'];
+$customerData = getUserData($customer_id);
 
+$countryAccounts =getAccountByCountryId($customerData['customer_country_id']);
+$countryData = getCountryData($customerData['customer_country_id']);
+
+$transactions = getTransactions($customerData['customer_id']);
 
 ?>
 
@@ -48,14 +55,80 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
             <div class="content">
                 <div class="tabs tabs-pill" id="tab-group-2">
                     <div class="tab-controls rounded-m p-1 overflow-visible">
-                        <a class="font-13 rounded-m shadow-bg shadow-bg-s" data-bs-toggle="collapse" href="#tab-4" aria-expanded="true">Recent</a>
-                        <a class="font-13 rounded-m shadow-bg shadow-bg-s" data-bs-toggle="collapse" href="#tab-5" aria-expanded="false">Transfers</a>
-                        <a class="font-13 rounded-m shadow-bg shadow-bg-s" data-bs-toggle="collapse" href="#tab-6" aria-expanded="false">Payments</a>
+                        <a class="font-13 rounded-m shadow-bg shadow-bg-s" data-bs-toggle="collapse" href="#tab-4" aria-expanded="true">Transactions</a>
+                        <!-- <a class="font-13 rounded-m shadow-bg shadow-bg-s" data-bs-toggle="collapse" href="#tab-5" aria-expanded="false">Transfers</a> -->
+                        <!-- <a class="font-13 rounded-m shadow-bg shadow-bg-s" data-bs-toggle="collapse" href="#tab-6" aria-expanded="false">Payments</a> -->
                     </div>
                     <div class="mt-3"></div>
                     <!-- Tab Group 1 -->
                     <div class="collapse show" id="tab-4" data-bs-parent="#tab-group-2">
-                        <a href="#" class="d-flex py-1" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-1">
+                        <div class="list-group list-custom list-group-m list-group-flush rounded-xs">
+                            <?php
+                            foreach ($transactions as $transaction) { 
+
+                                if ($transaction['transaction_type']=="deposit" && $transaction['to_customer_id']==$customer_id) {
+
+                            ?>
+                            <a href="#" class="list-group-item">
+                                <i class="has-bg gradient-green color-white rounded-xs bi bi-cash-coin"></i>
+                                <div><strong>Deposit</strong><span> From <?=getAccountByAccountId($transaction['from_customer_id'])['account_name']?></span> </div>
+                                <span class="badge bg-transparent color-theme text-end font-15">
+                                   <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                                   <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                                </span>
+                            </a>
+
+                            <?php }else if ($transaction['transaction_type']=="withdraw" && $transaction['from_customer_id']==$customer_id) { ?>
+                                <a href="#" class="list-group-item">
+                                    <i class="has-bg gradient-red color-white rounded-xs bi bi-cash-coin"></i>
+                                    <div><strong>Withdraw</strong><span> Via <?=getAccountByAccountId($transaction['to_customer_id'])['account_name']?></span> </div>
+                                    <span class="badge bg-transparent color-theme text-end font-15">
+                                       <?=$transaction['transaction_amount_type']?> <?=$transaction['transaction_amount']?> <br>
+                                       <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                                    </span>
+                                </a>
+
+                           <?php }else if ($transaction['transaction_type']=="transfer") {
+                            $from = "";
+                            $to = "";
+                            $suffix = "";
+                            $iconClass = "bi-suffle";
+                            $transactionAmountType = $transaction['transaction_amount_type'];
+                            $transactionAmount = $transaction['transaction_amount'];
+                            if ($transaction['from_customer_id']==$customer_id) {
+                                $from = "You";
+                                $to = getUserData($transaction['to_customer_id'])['customer_username'];
+                                $suffix = "Out";
+                                $iconClass = "bi-arrow-up";
+                            }else{
+                                $from = getUserData($transaction['from_customer_id'])['customer_username'];
+                                $to = "You";
+                                $suffix = "In";
+                                $iconClass = "bi-arrow-down";
+                                if ($transaction['transaction_amount_type']!= $countryData['country_currency']) {
+                                    $convertedTransaction = convertRate($transactionAmount, $transactionAmountType, $countryData['country_currency']);
+                                    $transactionAmountType = $convertedTransaction['type'];
+                                    $transactionAmount = $convertedTransaction['amount'];
+                                }
+                            }
+                            ?>
+                                <a href="#" class="list-group-item">
+                                    <i class="has-bg gradient-magenta color-white rounded-xs bi <?=$iconClass?>"></i>
+                                    <div><strong>Transfer <?=$suffix?></strong><span> From <?=$from?> To <?=$to?> </span> </div>
+                                    <span class="badge bg-transparent color-theme text-end font-15">
+                                       <?=$transactionAmountType?> <?=$transactionAmount?> <br>
+                                       <em class="fst-normal font-12 opacity-30"><?=$transaction['transaction_date_time']?></em>
+                                    </span>
+                                </a>
+
+                           <?php } ?>
+
+
+
+                        <?php } ?>
+                        </div>
+
+                        <!-- <a href="#" class="d-flex py-1" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-1">
                             <div class="align-self-center">
                                 <span class="icon gradient-red me-2 shadow-bg shadow-bg-s rounded-s">
                                     <img src="images/pictures/6s.jpg" width="45" class="rounded-s" alt="img">
@@ -123,10 +196,10 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                             <div class="align-self-center ms-auto text-end">
                                 <span class="btn btn-xxs gradient-blue shadow-bg shadow-bg-xs">Verify</span>
                             </div>
-                        </a>
+                        </a> -->
                     </div>
                     <!-- Tab Group 2 -->
-                    <div class="collapse" id="tab-5" data-bs-parent="#tab-group-2">
+                    <!-- <div class="collapse" id="tab-5" data-bs-parent="#tab-group-2">
                         <a href="#" class="d-flex py-1" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-1">
                             <div class="align-self-center">
                                 <span class="icon gradient-yellow me-2 shadow-bg shadow-bg-xs rounded-s">
@@ -183,9 +256,9 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                                 <span class="btn btn-xxs bg-green-dark shadow-bg shadow-bg-xs">Details</span>
                             </div>
                         </a>
-                    </div>
+                    </div> -->
                     <!-- Tab Group 3 -->
-                    <div class="collapse" id="tab-6" data-bs-parent="#tab-group-2">
+                    <!-- <div class="collapse" id="tab-6" data-bs-parent="#tab-group-2">
                         <a href="#" class="d-flex py-1" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-3">
                             <div class="align-self-center">
                                 <span class="icon rounded-s me-2 gradient-orange shadow-bg shadow-bg-xs"><i class="bi bi-google color-white"></i></span>
@@ -240,7 +313,7 @@ if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
                                 <span class="btn btn-xxs gradient-blue shadow-bg shadow-bg-xs">Verify</span>
                             </div>
                         </a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
