@@ -19,7 +19,7 @@
             <a href="#"
             data-bs-toggle="dropdown"
             class="icon gradient-blue shadow-bg shadow-bg-s rounded-m">
-                <img src="images/pictures/25s.jpg" width="45" class="rounded-m" alt="img">
+                <img src="images/pictures/user-avatar.png" width="45" class="rounded-m" alt="img">
             </a>
             <!-- Page Title Dropdown Menu-->
             <div class="dropdown-menu">
@@ -33,7 +33,7 @@
                             <i class="has-bg gradient-blue shadow-bg shadow-bg-xs color-white rounded-xs bi bi-graph-up"></i>
                             <strong class="font-13">Activity</strong>
                         </a>
-                        <a href="page-profile.html" class="list-group-item">
+                        <a href="profile.php" class="list-group-item">
                             <i class="has-bg gradient-yellow shadow-bg shadow-bg-xs color-white rounded-xs bi bi-person-circle"></i>
                             <strong class="font-13">Account</strong>
                         </a>

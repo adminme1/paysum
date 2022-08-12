@@ -86,6 +86,24 @@ function login($data)
 	return false;
 }
 
+function insertNotification($text, $to_customer_id)
+{
+	$conn = connectDB();
+	
+	$stmt = $conn->prepare("INSERT INTO notifications (notification_to, notification_text, notification_seen, notification_date_time) VALUES (?, ?, ?, ?)");
+	$stmt->bind_param("isss", $notification_to, $notification_text, $notification_seen, $notification_date_time);
+
+	$notification_to = $to_customer_id;
+	$notification_text = $text;
+	$notification_seen = "0";
+	$notification_date_time = date('Y-m-d H:i:s');
+
+	if ($stmt->execute()) {
+		return true;
+	}
+	return false;
+}
+
 function createCustomerAccount($data)
 {
 	if ($data) {
@@ -323,10 +341,12 @@ function transfer($from_id, $to_id, $amount, $currencyType)
 		$to_user_data = getUserData($to_id);
 		if ($from_user_data['customer_country_id']>0 && $to_user_data['customer_country_id']>0) {
 			$conn = connectDB();
-			$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, from_customer_id, to_customer_id, transaction_amount, transaction_amount_type, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-			$stmt->bind_param("siiisiiis", $transaction_type, $from_account_id, $to_account_id, $balance_amount, $transaction_amount_type, $from_user_country_id, $to_user_country_id, $transaction_charge, $transaction_date_time);
+			$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, transaction_hash, transaction_signature, from_customer_id, to_customer_id, transaction_amount, transaction_amount_type, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt->bind_param("sssiiisiiis", $transaction_type, $transaction_hash, $transaction_signature, $from_account_id, $to_account_id, $balance_amount, $transaction_amount_type, $from_user_country_id, $to_user_country_id, $transaction_charge, $transaction_date_time);
 
 			$transaction_type = "transfer";
+			$transaction_hash = bin2hex(random_bytes(22));
+			$transaction_signature = NULL;
 			$from_account_id = $from_id;
 			$to_account_id = $to_id;
 			$balance_amount = $amount;
@@ -337,6 +357,8 @@ function transfer($from_id, $to_id, $amount, $currencyType)
 			$transaction_date_time = date('Y-m-d H:i:s');
 
 			if ($stmt->execute()) {
+				$notification_msg = $from_user_data['customer_username']." transfered money to you.";
+				insertNotification($notification_msg, $to_user_data);
 				return [true];
 			}
 		}else{
@@ -347,9 +369,16 @@ function transfer($from_id, $to_id, $amount, $currencyType)
 	return [false];
 }
 
+function transferSignatureUpdate($signature, $transactionId)
+{
+	$conn = connectDB();
+	$sql = "UPDATE transactions SET transaction_signature='$signature' WHERE transaction_id='$transactionId'";
+	if ($cons->query($sql)) {
+		return true;
+	}
 
-
-
+	return false;
+}
 
 
 function getTransactions($customerId, $limit=null, $transaction_id = null){
@@ -394,75 +423,48 @@ function getTransactions($customerId, $limit=null, $transaction_id = null){
 	return $transactions;
 }
 
+function getNotifications($customerId, $limit=3){
+	$conn = connectDB();
+	$notifications = [];
 
+	$q1 = "SELECT * FROM notifications WHERE notification_to='$customerId' AND notification_seen='0' ORDER BY notification_date_time DESC LIMIT $limit ";
+	$result1 = $conn->query($q1);
 
+	 // var_dump($conn->error);
 
-function isTokenHolder($walletAddress){
-	$tokenholders = "test_tokens.csv";
-	$datas = ['found'=>false];
-	if (($handle = fopen($tokenholders, "r")) !== FALSE) {
-	  while (($data = fgetcsv($handle, 1000)) !== FALSE) {
-	  	foreach ($data as $value) {
-	  		if (strtolower($value)==$walletAddress) {
-	  			//echo "$value";
-	  			$datas['found']=true;
-	  			$datas['data'] = $data;
-	  			break;
-	  		}
-	  	}
-	  	
-	  }
+	
 
-	  fclose($handle);
+	if ($result1->num_rows > 0) {
+		while($row1 = $result1->fetch_assoc()) {
+			$notifications[]=$row1;
+		}
+
 	}
-	return $datas;
+
+
+	return $notifications;
 }
 
 
-function votingResult($question_id)
-{
-	if ($question_id) {
-		$conn = connectDB();
+/*
+*
+* SFT Explorer
+*
+*/
 
-		$question_id = htmlentities(trim(strip_tags(stripslashes($question_id))), ENT_NOQUOTES, "UTF-8");
-		$q1 = "SELECT questions_options.option_name, COUNT(votes.option_id) AS count, (SELECT COUNT(vote_id) FROM votes WHERE question_id=?) AS max FROM votes INNER JOIN questions_options ON votes.option_id=questions_options.option_id WHERE votes.question_id=? GROUP BY option_name";
-
-
-		$stmt1 = $conn->prepare($q1);
-		// var_dump($conn);
-		$stmt1->bind_param('ii', $question_id, $question_id);
-		$stmt1->execute();
-		$result1 = $stmt1->get_result();
-		$data = $result1->fetch_all(MYSQLI_ASSOC);
-
-		$stmt1->close();
-
-		$conn->close();
-		return $data;
-
-	}	
-}
-
-
-function insertVote($walletAddress, $question_id, $option_id)
+function insertBlockData($data, $transfer_id)
 {
 	$conn = connectDB();
-	$tokenholderData = isTokenHolder($walletAddress);
-	if ($tokenholderData['found']) {
-		
-		$voter_weight = $tokenholderData['data'][1];
-		$stmt = $conn->prepare("INSERT INTO votes (voter_address, voter_weight, question_id, option_id, vote_date_time) VALUES (?, ?, ?, ?, ?)");
-		$stmt->bind_param("siiis", $walletAddress1, $voter_weight1, $question_id1, $option_id1, $currentDateTime);
+	$stmt = $conn->prepare("INSERT INTO blockchain_transactions (transaction_hash, transaction_block, transaction_from, transaction_to, registration_datetime) VALUES (?, ?, ?, ?, ?)");
+	$stmt->bind_param("issss", $customer_country_id, $customer_email, $customer_username, $customer_password, $registration_datetime);
 
-		$walletAddress1 = $walletAddress;
-		$voter_weight1 = $voter_weight;
-		$question_id1 = $question_id;
-		$option_id1 = $option_id;
-		$currentDateTime = date('Y-m-d H:i:s');
+	$customer_country_id = $data['customer_country_id'];
+	$customer_email = $data['customer_email'];
+	$customer_username = $data['customer_username'];
+	$customer_password = $data['customer_password'];
+	$registration_datetime = date('Y-m-d H:i:s');
 
-		if ($stmt->execute()) {
-			return true;
-		}
+	if ($stmt->execute()) {
+		return true;
 	}
-	return false;
 }

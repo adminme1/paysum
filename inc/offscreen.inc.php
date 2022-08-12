@@ -24,6 +24,6 @@
 </div>
 
 <!-- Notifications Bell -->
-<div id="menu-notifications" data-menu-load="menu-notifications.html"
+<div id="menu-notifications" data-menu-load="menu-notifications.php"
     class="offcanvas offcanvas-top offcanvas-detached rounded-m">
 </div>

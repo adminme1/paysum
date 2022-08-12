@@ -1,0 +1,12 @@
+.body{
+    background-color: rgb(224, 226, 227);
+}
+.container-fluid-details{
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+    background-color:#ffffff;
+    text-align:center;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    /* border-radius: 20% 15%; */
+}

@@ -120,7 +120,7 @@
                 <div>Support</div>
                 <i class="bi bi-chevron-right"></i>
             </a>
-            <a href="page-profile.html" class="list-group-item">
+            <a href="profile.php" class="list-group-item">
                 <i class="bi bi-person-circle opacity-20 font-16"></i>
                 <div>Account</div>
                 <i class="bi bi-chevron-right"></i>
@@ -134,6 +134,6 @@
 
         <div class="divider divider-margins opacity-50"></div>
         <!-- Menu Copyright -->
-        <p class="px-3 font-9 opacity-30 color-theme mt-n3">Copyright <span class="copyright-year"></span>. Made with <i class="bi bi-heart-fill color-red-dark px-1"></i> by CRISIS</p>
+        <p class="px-3 font-9 opacity-30 color-theme mt-n3">Copyright <span class="copyright-year"></span>. Made with <i class="bi bi-heart-fill color-red-dark px-1"></i> by CRISIS Entertainment</p>
     </div>
 </div>

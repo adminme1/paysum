@@ -1,56 +1,31 @@
-<!DOCTYPE HTML>
-<html lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
-<title>PayApp - Finance, Banking, Wallet, Crypto Mobile PWA</title>
-<link rel="stylesheet" type="text/css" href="styles/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="fonts/bootstrap-icons.css">
-<link rel="stylesheet" type="text/css" href="styles/style.css">
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="manifest" href="_manifest.json">
-<meta id="theme-check" name="theme-color" content="#FFFFFF">
-<link rel="apple-touch-icon" sizes="180x180" href="app/icons/icon-192x192.png"></head>
+<?php
+require_once 'inc/config.inc.php';
 
-<body class="theme-light">
+if (!isset($_SESSION['loggedIn']) && !isset($_SESSION['userData'])) {
+    header("location: login.php");
+    exit();
+}
+$customer_id = $_SESSION['userData']['customer_id'];
+$customerData = getUserData($customer_id);
 
-<div id="preloader"><div class="spinner-border color-highlight" role="status"></div></div>
+$countryAccounts =getAccountByCountryId($customerData['customer_country_id']);
+$countryData = getCountryData($customerData['customer_country_id']);
 
-<!-- Page Wrapper-->
-<div id="page">
+$currentBalance = currentBalance($customerData['customer_id'])['balance'];
+$transactions = getTransactions($customerData['customer_id'], 4);
+$title = "Profile";
+?>
+
+<?php require_once 'inc/header.inc.php'; ?>
 
     <!-- Footer Bar -->
-    <div id="footer-bar" class="footer-bar-1 footer-bar-detached">
-        <a href="page-wallet.html"><i class="bi bi-wallet2"></i><span>Cards</span></a>
-        <a href="page-activity.html"><i class="bi bi-graph-up"></i><span>Activity</span></a>
-        <a href="index-waves.html" class="circle-nav-2"><i class="bi bi-house-fill"></i><span>Home</span></a>
-        <a href="page-payments.html"><i class="bi bi-receipt"></i><span>Payments</span></a>
-        <a href="#" data-bs-toggle="offcanvas" data-bs-target="#menu-sidebar"><i class="bi bi-three-dots"></i><span>More</span></a>
-    </div>
+    <?php require_once 'inc/footer_bar.inc.php'; ?>
 
     <!-- Page Content - Only Page Elements Here-->
     <div class="page-content footer-clear">
 
        <!-- Page Title-->
-       <div class="pt-3 disabled">
-           <div class="page-title d-flex">
-               <div class="align-self-center me-auto">
-                   <p class="color-white">Welcome Back</p>
-                   <h1 class="color-white">PayApp</h1>
-               </div>
-               <div class="align-self-center ms-auto">
-                      <a href="#"
-                      data-bs-toggle="offcanvas"
-                      data-bs-target="#menu-sidebar"
-                      class="icon bg-white rounded-m">
-                          <i class="bi bi-list font-20"></i>
-                      </a>
-                  </div>
-           </div>
-       </div>
+       <?php require_once 'inc/page_title.inc.php'; ?>
 
        <svg id="header-deco" viewBox="0 0 1440 600" xmlns="http://www.w3.org/2000/svg">
            <path id="header-deco-1" d="M 0,600 C 0,600 0,120 0,120 C 92.36363636363635,133.79904306220095 184.7272727272727,147.59808612440193 287,148 C 389.2727272727273,148.40191387559807 501.4545454545455,135.40669856459328 592,129 C 682.5454545454545,122.5933014354067 751.4545454545455,122.77511961722489 848,115 C 944.5454545454545,107.22488038277511 1068.7272727272727,91.49282296650718 1172,91 C 1275.2727272727273,90.50717703349282 1357.6363636363635,105.25358851674642 1440,120 C 1440,120 1440,600 1440,600 Z"></path>

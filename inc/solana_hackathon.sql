@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 11, 2022 at 11:28 PM
+-- Generation Time: Aug 12, 2022 at 09:29 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.1
 
@@ -50,6 +50,23 @@ INSERT INTO `accounts` (`account_id`, `country_id`, `account_name`) VALUES
 (9, 4, 'Osko'),
 (10, 4, 'Bank_Australia'),
 (11, 4, 'LinePay');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `blockchain_transactions`
+--
+
+CREATE TABLE `blockchain_transactions` (
+  `blockchain_transactions_id` int(11) NOT NULL,
+  `transaction_hash` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_block` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_from` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_to` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_amount` int(11) NOT NULL,
+  `transaction_amount_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_date_time` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -105,12 +122,35 @@ INSERT INTO `customers` (`customer_id`, `customer_name`, `customer_dob`, `custom
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `notification_id` int(11) NOT NULL,
+  `notification_to` int(11) NOT NULL,
+  `notification_text` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notification_seen` enum('0','1') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `notification_date_time` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`notification_id`, `notification_to`, `notification_text`, `notification_seen`, `notification_date_time`) VALUES
+(1, 1, 'Testing...', '0', '2022-08-12 12:07:09');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `transactions`
 --
 
 CREATE TABLE `transactions` (
   `transaction_id` int(11) NOT NULL,
   `transaction_type` enum('deposit','transfer','withdraw') COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'deposit, withdraw, transfer',
+  `transaction_hash` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_signature` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `from_customer_id` int(11) NOT NULL,
   `to_customer_id` int(11) NOT NULL,
   `transaction_amount` int(11) NOT NULL,
@@ -125,17 +165,17 @@ CREATE TABLE `transactions` (
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`transaction_id`, `transaction_type`, `from_customer_id`, `to_customer_id`, `transaction_amount`, `transaction_amount_type`, `transaction_from_country_id`, `transaction_to_country_id`, `transaction_charge`, `transaction_date_time`) VALUES
-(1, 'deposit', 1, 1, 1000, 'BDT', 1, 1, 0, '2022-08-10 15:38:28'),
-(2, 'deposit', 6, 1, 200, 'BDT', 1, 1, 0, '2022-08-10 15:53:23'),
-(3, 'deposit', 4, 2, 500, 'INR', 2, 2, 0, '2022-08-10 15:56:32'),
-(4, 'deposit', 3, 1, 300, 'BDT', 1, 1, 0, '2022-08-10 16:15:49'),
-(5, 'withdraw', 1, 1, 100, 'BDT', 1, 1, 0, '2022-08-11 00:53:49'),
-(6, 'transfer', 1, 2, 100, 'BDT', 1, 2, 0, '2022-08-11 01:31:17'),
-(7, 'transfer', 2, 1, 100, 'INR', 2, 1, 0, '2022-08-11 01:36:10'),
-(8, 'transfer', 1, 2, 300, 'BDT', 1, 2, 0, '2022-08-11 01:43:13'),
-(9, 'deposit', 10, 3, 200, 'AUD', 4, 4, 0, '2022-08-12 01:15:36'),
-(10, 'transfer', 3, 1, 20, 'AUD', 4, 1, 0, '2022-08-12 01:16:35');
+INSERT INTO `transactions` (`transaction_id`, `transaction_type`, `transaction_hash`, `transaction_signature`, `from_customer_id`, `to_customer_id`, `transaction_amount`, `transaction_amount_type`, `transaction_from_country_id`, `transaction_to_country_id`, `transaction_charge`, `transaction_date_time`) VALUES
+(1, 'deposit', NULL, NULL, 1, 1, 1000, 'BDT', 1, 1, 0, '2022-08-10 15:38:28'),
+(2, 'deposit', NULL, NULL, 6, 1, 200, 'BDT', 1, 1, 0, '2022-08-10 15:53:23'),
+(3, 'deposit', NULL, NULL, 4, 2, 500, 'INR', 2, 2, 0, '2022-08-10 15:56:32'),
+(4, 'deposit', NULL, NULL, 3, 1, 300, 'BDT', 1, 1, 0, '2022-08-10 16:15:49'),
+(5, 'withdraw', NULL, NULL, 1, 1, 100, 'BDT', 1, 1, 0, '2022-08-11 00:53:49'),
+(6, 'transfer', NULL, NULL, 1, 2, 100, 'BDT', 1, 2, 0, '2022-08-11 01:31:17'),
+(7, 'transfer', NULL, NULL, 2, 1, 100, 'INR', 2, 1, 0, '2022-08-11 01:36:10'),
+(8, 'transfer', NULL, NULL, 1, 2, 300, 'BDT', 1, 2, 0, '2022-08-11 01:43:13'),
+(9, 'deposit', NULL, NULL, 10, 3, 200, 'AUD', 4, 4, 0, '2022-08-12 01:15:36'),
+(10, 'transfer', NULL, NULL, 3, 1, 20, 'AUD', 4, 1, 0, '2022-08-12 01:16:35');
 
 --
 -- Indexes for dumped tables
@@ -148,6 +188,12 @@ ALTER TABLE `accounts`
   ADD PRIMARY KEY (`account_id`);
 
 --
+-- Indexes for table `blockchain_transactions`
+--
+ALTER TABLE `blockchain_transactions`
+  ADD PRIMARY KEY (`blockchain_transactions_id`);
+
+--
 -- Indexes for table `country`
 --
 ALTER TABLE `country`
@@ -158,6 +204,12 @@ ALTER TABLE `country`
 --
 ALTER TABLE `customers`
   ADD PRIMARY KEY (`customer_id`);
+
+--
+-- Indexes for table `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`notification_id`);
 
 --
 -- Indexes for table `transactions`
@@ -176,6 +228,12 @@ ALTER TABLE `accounts`
   MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT for table `blockchain_transactions`
+--
+ALTER TABLE `blockchain_transactions`
+  MODIFY `blockchain_transactions_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `country`
 --
 ALTER TABLE `country`
@@ -186,6 +244,12 @@ ALTER TABLE `country`
 --
 ALTER TABLE `customers`
   MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `transactions`

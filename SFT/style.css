@@ -1,0 +1,51 @@
+
+.container-fluid-main{
+    padding-top: 50px;
+    padding-bottom: 30px;
+    padding-right: 20px;
+    font-size: xx-large;
+    text-align: left;
+    padding-left: 30px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color:#fff;
+    /* background-color: #494949; */
+    /* background: linear-gradient(135deg, #393db2 0%, #0fa49f 100%) */
+    background: url("https://solscan.io/static/media/banner-header-1.c1e47687.svg") center top / cover no-repeat;        
+}
+
+
+.col-lg-1{
+    font-size: large;
+    text-align: center;  
+    padding-top: 5px;     
+}
+
+.container-header{
+    text-align: center;
+    font-size: medium;
+    opacity: 90% ;
+}
+.container-fluid-body{
+    padding-left: 10px;
+    /* background-color:beige; */
+    padding: 100px 100px;
+    font-size: large;
+    color: #009933;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #FAACA8;
+    background-image: linear-gradient(19deg, #FAACA8 0%, #DDD6F3 100%);
+    
+    
+    
+    }
+.main-frooter{
+    color:white;
+    ;
+}
+
+.container-contact{
+padding-left: 20rem;
+}
+
+
+

@@ -330,7 +330,7 @@ $transactions = getTransactions($customerData['customer_id']);
     <!-- Main Sidebar Menu -->
     <div id="menu-sidebar"
         data-menu-active="nav-pages"
-        data-menu-load="menu-sidebar.html"
+        data-menu-load="menu-sidebar.php"
         class="offcanvas offcanvas-start offcanvas-detached rounded-m">
     </div>
 	

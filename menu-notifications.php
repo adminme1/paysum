@@ -1,3 +1,9 @@
+<?php
+require_once 'inc/config.inc.php';
+$customer_id = $_SESSION['userData']['customer_id'];
+$customerData = getUserData($customer_id);
+?>
+
 <!-- menu-size will be the dimension of your menu. If you set it to smaller than your content it will scroll-->
 <div class="menu-size" style="height:365px;">
     <div class="d-flex mx-3 mt-3 py-1">
@@ -11,21 +17,27 @@
         </div>
     </div>
     <div class="content pb-2">
-        <a href="page-activity.html" class="d-flex py-1">
+        <?php 
+        $notifications = getNotifications($customer_id);
+        foreach ($notifications as $notification) {
+            ?>
+        <a href="activity.php" class="d-flex py-1">
             <div class="align-self-center">
-                <span class="icon rounded-s me-2 gradient-orange shadow-bg shadow-bg-xs"><i class="bi bi-google color-white"></i></span>
+                <span class="icon rounded-s me-2 gradient-orange shadow-bg shadow-bg-xs"><i class="bi bi-suffle color-white"></i></span>
             </div>
             <div class="align-self-center ps-1">
-                <h5 class="pt-1 mb-n1">Google Ads</h5>
-                <p class="mb-0 font-11 opacity-70">14th March 03:14 AM</p>
+                <h5 class="pt-1 mb-n1"><?=$notification['notification_text']?></h5>
+                <p class="mb-0 font-11 opacity-70"><?=$notification['notification_date_time']?></p>
             </div>
             <div class="align-self-center ms-auto text-end">
-                <h4 class="pt-1 mb-n1 color-red-dark">$150.55</h4>
-                <p class="mb-0 font-11">Bill Payment</p>
+                <!-- <h4 class="pt-1 mb-n1 color-red-dark">$150.55</h4> -->
+                <p class="mb-0 font-11">Transfer</p>
             </div>
         </a>
         <div class="divider my-2 opacity-50"></div>
-        <a href="page-activity.html" class="d-flex py-1">
+    <?php } ?>
+        
+        <!-- <a href="page-activity.html" class="d-flex py-1">
             <div class="align-self-center">
                 <span class="icon rounded-s me-2 gradient-green shadow-bg shadow-bg-xs"><i class="bi bi-caret-up-fill color-white"></i></span>
             </div>
@@ -50,7 +62,7 @@
             <div class="align-self-center ms-auto text-end">
                 <span class="btn btn-xxs bg-green-dark shadow-bg shadow-bg-xs">Details</span>
             </div>
-        </a>
+        </a> -->
     </div>
-    <a href="page-activity.html" class="mx-3 btn btn-full gradient-highlight shadow-bg shadow-bg-s">View All Notifications</a>
+    <a href="activity.php" class="mx-3 btn btn-full gradient-highlight shadow-bg shadow-bg-s">View All Notifications</a>
 </div>
