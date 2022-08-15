@@ -304,7 +304,8 @@ function deposit($fromAccountId, $toAccountId, $depositAmount, $currencyType)
 	$transaction_date_time = date('Y-m-d H:i:s');
 
 	if ($stmt->execute()) {
-		return [true];
+		$transactionData = getTransactionById($conn->insert_id);
+		return [true, $transactionData];
 	}
 	return [false];
 
@@ -329,7 +330,8 @@ function withdraw($toAccountId, $fromAccountId, $withdrawAmount, $currencyType)
 	$transaction_date_time = date('Y-m-d H:i:s');
 
 	if ($stmt->execute()) {
-		return [true];
+		$transactionData = getTransactionById($conn->insert_id);
+		return [true, $transactionData];
 	}
 	return [false];
 }
@@ -341,7 +343,7 @@ function transfer($from_id, $to_id, $amount, $currencyType)
 		$to_user_data = getUserData($to_id);
 		if ($from_user_data['customer_country_id']>0 && $to_user_data['customer_country_id']>0) {
 			$conn = connectDB();
-			$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, transaction_hash, transaction_signature, from_customer_id, to_customer_id, transaction_amount, transaction_amount_type, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			$stmt = $conn->prepare("INSERT INTO transactions (transaction_type, transaction_hash, transaction_signature, from_customer_id, to_customer_id, transaction_amount, transaction_amount_type, transaction_from_country_id, transaction_to_country_id, transaction_charge, transaction_date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			$stmt->bind_param("sssiiisiiis", $transaction_type, $transaction_hash, $transaction_signature, $from_account_id, $to_account_id, $balance_amount, $transaction_amount_type, $from_user_country_id, $to_user_country_id, $transaction_charge, $transaction_date_time);
 
 			$transaction_type = "transfer";
@@ -359,7 +361,8 @@ function transfer($from_id, $to_id, $amount, $currencyType)
 			if ($stmt->execute()) {
 				$notification_msg = $from_user_data['customer_username']." transfered money to you.";
 				insertNotification($notification_msg, $to_user_data);
-				return [true];
+				$transactionData = getTransactionById($conn->insert_id);
+				return [true, $transactionData];
 			}
 		}else{
 			return [false, "Country is empty in profile!"];
@@ -423,6 +426,21 @@ function getTransactions($customerId, $limit=null, $transaction_id = null){
 	return $transactions;
 }
 
+
+function getTransactionById($transactionId)
+{
+	if ($transactionId) {
+		$conn = connectDB();
+		$q1 = "SELECT * FROM transactions WHERE transaction_id=?";
+		$stmt1 = $conn->prepare($q1);
+		$stmt1->bind_param('s', $transactionId);
+		$stmt1->execute();
+		$result1 = $stmt1->get_result();
+		return $result1->fetch_assoc();
+	}
+	return false;
+}
+
 function getNotifications($customerId, $limit=3){
 	$conn = connectDB();
 	$notifications = [];
@@ -452,6 +470,8 @@ function getNotifications($customerId, $limit=3){
 *
 */
 
+
+
 function insertBlockData($data, $transfer_id)
 {
 	$conn = connectDB();
@@ -467,4 +487,41 @@ function insertBlockData($data, $transfer_id)
 	if ($stmt->execute()) {
 		return true;
 	}
+}
+
+
+function getAllTransactions($transaction_hash = null){
+	$conn = connectDB();
+	$transactions = [];
+
+	$q1 = "SELECT * FROM transactions WHERE transaction_type='transfer' ORDER BY transaction_date_time DESC";
+	$result1 = $conn->query($q1);
+
+	if ($transaction_hash) {
+		$q1 = "SELECT * FROM transactions WHERE transaction_type='transfer' AND transaction_hash=? ORDER BY transaction_date_time DESC";
+		$stmt1 = $conn->prepare($q1);
+		$stmt1->bind_param('s', $transaction_hash);
+		$stmt1->execute();
+		$result1 = $stmt1->get_result();
+	}
+	
+
+	if ($result1->num_rows > 0) {
+		while($row1 = $result1->fetch_assoc()) {
+			// $q2 = "SELECT * FROM transactions WHERE from_customer_id=? OR to_customer_id=?";
+			// $stmt2 = $conn->prepare($q2);
+			// $stmt2->bind_param('ii', $customerId, $customerId);
+			// $stmt2->execute();
+			// $result2 = $stmt2->get_result();
+			// while ($row2 = $result2->fetch_assoc()) {
+				$transactions[]=$row1;
+			// }
+
+
+		}
+
+	}
+
+
+	return $transactions;
 }

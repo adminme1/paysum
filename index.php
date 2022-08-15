@@ -136,7 +136,7 @@ $transactions = getTransactions($customerData['customer_id'], 4);
                         }
                     }
                     ?>
-                        <a href="#" class="list-group-item">
+                        <a href="#" class="list-group-item" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-4">
                             <i class="has-bg gradient-magenta color-white rounded-xs bi <?=$iconClass?>"></i>
                             <div><strong>Transfer <?=$suffix?></strong><span> From <?=$from?> To <?=$to?> </span> </div>
                             <span class="badge bg-transparent color-theme text-end font-15">
@@ -203,6 +203,51 @@ $transactions = getTransactions($customerData['customer_id'], 4);
     <!-- Always outside the Page Content-->
 
     <?php // require_once 'inc/offscreen.inc.php'; ?>
+
+    <!-- Transaction Action Sheet -->
+    <div id="menu-activity-4" class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
+        <!-- menu-size will be the dimension of your menu. If you set it to smaller than your content it will scroll-->
+        <div class="menu-size" style="height:380px;">
+            <div class="content">
+                <a href="#" class="d-flex py-1 pb-4">
+                    <div class="align-self-center">
+                        <span class="icon rounded-s me-2 gradient-green shadow-bg shadow-bg-xs"><i class="bi bi-person-circle font-18 color-white"></i></span>
+                    </div>
+                    <div class="align-self-center ps-1">
+                        <h5 class="pt-1 mb-n1">Karla Black</h5>
+                        <p class="mb-0 font-11 opacity-70">Awaiting Approval</p>
+                    </div>
+                    <div class="align-self-center ms-auto text-end">
+                        <h4 class="pt-1 font-14 mb-n1 color-yellow-dark">PENDING</h4>
+                        <p class="mb-0 font-11"> ID-315-6123</p>
+                    </div>
+                </a>
+                <div class="row">
+                    <strong class="col-5 color-theme">Type</strong>
+                    <strong class="col-7 text-end">Transfer</strong>
+                    <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div>
+                    <strong class="col-5 color-theme">Paid To</strong>
+                    <strong class="col-7 text-end">GOOGLE LLC LTD</strong>
+                    <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div>
+                    <strong class="col-5 color-theme">Date</strong>
+                    <strong class="col-7 text-end">12th March</strong>
+                    <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div>
+                    <strong class="col-5 color-theme">Amount</strong>
+                    <strong class="col-7 text-end color-highlight">$324.55</strong>
+                    <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div>
+                    <strong class="col-5 color-theme">Paid From</strong>
+                    <strong class="col-7 text-end">Credit Card</strong>
+                    <div class="col-12 mt-2 mb-4"><div class="divider my-0"></div></div>
+                    <!-- <div class="col-6">
+                        <a href="#" data-bs-dismiss="offcanvas" class="btn btn-s btn-full gradient-green shadow-bg shadow-bg-xs">View Hash</a>
+                    </div> -->
+                    <div class="col-6 text-center">
+                        <a href="#" data-bs-dismiss="offcanvas" class="btn btn-s btn-full gradient-red shadow-bg shadow-bg-xs">View Hash</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Sidebar Menu -->
     <div id="menu-sidebar" data-menu-active="nav-welcome" data-menu-load="menu-sidebar.php"

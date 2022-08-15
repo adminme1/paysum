@@ -1,67 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- CSS only -->
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="styleHome.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<?php
+require_once '../inc/config.inc.php';
+require_once 'header.inc.php';
+$transactions = getAllTransactions();
 
+?>
 
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-
-    <title>SFT || Home</title>
-</head>
-<body>
-
-<div class="body-background">
-    <div class="container-fluid-main">
-        <div class="container-fluid-header ">
-            <div class="row">
-              <div class="col-lg-8 col-md-4 col-sm-2 justify-content-center"><a style="text-decoration: none; font-family:Roboto,sans-serif; color: white;" href="./index.html">SFT Explorer</a></div>
-              <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none;font-family:Roboto,sans-serif; color: white;" href="./transactions.html">Transactions</a></div>
-              <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none; font-family:Roboto,sans-serif; color: white;" href="./poolTransaction.html">Pool</a></div>
-              <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none; font-family:Roboto,sans-serif; color: white;" href="./about.html">About</a></div>
-              <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none;font-family:Roboto,sans-serif; color: white;" href="./contact.html">Contact</a></div>
-            </div>
-        </div>
-        <div class="container h-100">
-          <div class="d-flex justify-content-center h-100">
-            
-            <div class="searchbar">
-              <input class="search_input" type="text" name="" placeholder="Search For Anything">
-              <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
-            </div>
-          </div>
-        </div>
-                 
-             </div>        
-              
-          </div>
+<?php 
+if (isset($_SESSION['error'])) {
+  echo "<div class='alert alert-danger'><b>".$_SESSION['error']."</b></div>";
+  unset($_SESSION['error']);
+}
+?>
           
           
-      </div>
 
 
-<div class="container-card">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<div class="container mt-5">
+  
 
-<div class="col-md-10 ">
+<div class="col-md-12">
     <div class="row ">
         <div class="col-xl-3 col-lg-6">
             <div class="card l-bg-cherry">
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">Amount In Pool</h5>
+                        <h5 class="card-title mb-0">Pool Balance</h5>
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
@@ -69,9 +33,9 @@
                                 3,243
                             </h2>
                         </div>
-                        <div class="col-4 text-right">
+                        <!-- <div class="col-4 text-right">
                             <span>12.5% <i class="fa fa-arrow-up"></i></span>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="progress mt-1 " data-height="8" style="height: 8px;">
                         <div class="progress-bar l-bg-cyan" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
@@ -84,7 +48,7 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">Total Amount Of Fund</h5>
+                        <h5 class="card-title mb-0">Total Fund</h5>
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
@@ -92,9 +56,9 @@
                                 15.07k
                             </h2>
                         </div>
-                        <div class="col-4 text-right">
+                        <!-- <div class="col-4 text-right">
                             <span>9.23% <i class="fa fa-arrow-up"></i></span>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="progress mt-1 " data-height="8" style="height: 8px;">
                         <div class="progress-bar l-bg-green" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
@@ -115,9 +79,9 @@
                                 578
                             </h2>
                         </div>
-                        <div class="col-4 text-right">
+                        <!-- <div class="col-4 text-right">
                             <span>10% <i class="fa fa-arrow-up"></i></span>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="progress mt-1 " data-height="8" style="height: 8px;">
                         <div class="progress-bar l-bg-orange" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
@@ -128,7 +92,7 @@
         <div class="col-xl-3 col-lg-6">
             <div class="card l-bg-orange-dark">
                 <div class="card-statistic-3 p-4">
-                    <div class="card-icon card-icon-large"></i></div>
+                    <div class="card-icon card-icon-large"></div>
                     <div class="mb-4">
                         <h5 class="card-title mb-0">Received Today</h5>
                     </div>
@@ -138,9 +102,9 @@
                                 $11.61k
                             </h2>
                         </div>
-                        <div class="col-4 text-right">
+                        <!-- <div class="col-4 text-right">
                             <span>2.5% <i class="fa fa-arrow-up"></i></span>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="progress mt-1 " data-height="8" style="height: 8px;">
                         <div class="progress-bar l-bg-cyan" role="progressbar" data-width="25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
@@ -153,7 +117,7 @@
 </div>
 
 
-<div class="container-fluid-body">
+<div class="container">
     <table class="table" id="example">
         <thead>
           <tr>
@@ -162,55 +126,36 @@
             <th scope="col">Time</th>
             <th scope="col">From</th>
             <th scope="col">To</th>
-            <th scope="col">Amount(USDT)</th>
+            <th scope="col">Amount(USD)</th>
             <th scope="col">Confirmation</th>
           </tr>
         </thead>
         <tbody>
+        <?php $i=0; foreach ($transactions as $transaction) {
+        $transaction_hash = $transaction['transaction_hash'];
+        ?>
           <tr>
-            <th scope="row">1</th>
+            <th scope="row"><?=++$i?></th>
+            <td><a href="details.php?transaction_hash=<?=$transaction_hash?>">Hash View</a></td>
+            <td><?=$transaction['transaction_date_time']?></td>
+            <td><?php 
+            $fromUser = getUserData($transaction['from_customer_id'])['customer_username'];
+            echo substr($fromUser, 0,2)."*****".substr($fromUser, -2);
+            ?></td>
+            <td><?php
+            $toUser=getUserData($transaction['to_customer_id'])['customer_username'];
+            echo substr($toUser, 0,2)."*****".substr($toUser, -2);
+            ?></td>
             <td>
-              <a href="./details.html">Hash</a>
+              <?php
+              $usdRate = convertPriceRate($transaction['transaction_amount'], $transaction['transaction_amount_type']);
+              echo "$".$usdRate['amount'];
+            ?>
+              
             </td>
-            <td>Aug 4, 2022, 12.05pm , IST, +5.30</td>
-            <td>sa*****4f</td>
-            <td>rk*****03</td>
-            <td>1.323</td>
-            <td>Pending</td>
+            <td>Success</td>
           </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Hash    </td>
-            <td>Aug 4, 2022, 12.05pm , IST, +5.30</td>
-            <td>sa*****4f</td>
-            <td>rk*****03</td>
-            <td>1.323</td>
-            <td>Pending</td>
-          </tr><tr>
-            <th scope="row">3</th>
-            <td>Hash</td>
-            <td>5 Minutes Ago</td>
-            <td>sa*****4f</td>
-            <td>rk*****03</td>
-            <td>1.323</td>
-            <td>Pending</td>
-          </tr><tr>
-            <th scope="row">4</th>
-            <td>Hash</td>
-            <td>Aug 4, 2022, 12.05pm , IST, +5.30</td>
-            <td>sa*****4f</td>
-            <td>rk*****03</td>
-            <td>1.323</td>
-            <td>Pending</td>
-          </tr><tr>
-            <th scope="row">5</th>
-            <td>Hash</td>
-            <td>Aug 4, 2022, 12.05pm , IST, +5.30</td>
-            <td>sa*****4f</td>
-            <td>rk*****03</td>
-            <td>1.323</td>
-            <td>Pending</td>
-          </tr>
+        <?php } ?>
         </tbody>
       </table>
 </div>
@@ -314,11 +259,13 @@
 <!-- Footer -->
 <script type="text/javascript">
   $(document).ready(function () {
-      $('#example').DataTable();
+      $('#example').DataTable({
+        searching:false
+      });
   })
 
 </script>
-<script src="./index.js"></script>
+
     <!-- JavaScript Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
 </body>

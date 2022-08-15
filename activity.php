@@ -112,7 +112,7 @@ $transactions = getTransactions($customerData['customer_id']);
                                 }
                             }
                             ?>
-                                <a href="#" class="list-group-item">
+                                <a href="#" class="list-group-item" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-4" onclick="getDetails('<?=$transaction['transaction_hash']?>')">
                                     <i class="has-bg gradient-magenta color-white rounded-xs bi <?=$iconClass?>"></i>
                                     <div><strong>Transfer <?=$suffix?></strong><span> From <?=$from?> To <?=$to?> </span> </div>
                                     <span class="badge bg-transparent color-theme text-end font-15">
@@ -170,8 +170,8 @@ $transactions = getTransactions($customerData['customer_id']);
                                 <h4 class="pt-1 mb-n1 color-red-dark">$324.55</h4>
                                 <p class="mb-0 font-11">Bill Payment</p>
                             </div>
-                        </a>
-                        <div class="divider my-2 opacity-50"></div>
+                        </a>-->
+                        <!-- <div class="divider my-2 opacity-50"></div>
                         <a href="#" class="d-flex py-1" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-4">
                             <div class="align-self-center">
                                 <span class="icon rounded-s me-2 gradient-green shadow-bg shadow-bg-xs"><i class="bi bi-person-circle font-18 color-white"></i></span>
@@ -183,7 +183,8 @@ $transactions = getTransactions($customerData['customer_id']);
                             <div class="align-self-center ms-auto text-end">
                                 <span class="btn btn-xxs gradient-green shadow-bg shadow-bg-xs">Details</span>
                             </div>
-                        </a>
+                        </a> -->
+                        <!--
                         <div class="divider my-2 opacity-50"></div>
                         <a href="#" class="d-flex py-1" data-bs-toggle="offcanvas" data-bs-target="#menu-activity-5">
                             <div class="align-self-center">
@@ -326,6 +327,11 @@ $transactions = getTransactions($customerData['customer_id']);
 
     <!-- Off Canvas and Menu Elements-->
     <!-- Always outside the Page Content-->
+
+    <!-- Notifications Bell -->
+    <div id="menu-notifications" data-menu-load="menu-notifications.php"
+        class="offcanvas offcanvas-top offcanvas-detached rounded-m">
+    </div>
 
     <!-- Main Sidebar Menu -->
     <div id="menu-sidebar"
@@ -471,20 +477,20 @@ $transactions = getTransactions($customerData['customer_id']);
                         <span class="icon rounded-s me-2 gradient-green shadow-bg shadow-bg-xs"><i class="bi bi-person-circle font-18 color-white"></i></span>
                     </div>
                     <div class="align-self-center ps-1">
-                        <h5 class="pt-1 mb-n1">Karla Black</h5>
-                        <p class="mb-0 font-11 opacity-70">Awaiting Approval</p>
+                        <h5 class="pt-1 mb-n1">Transfer</h5>
+                        <p class="mb-0 font-11 opacity-70">Success</p>
                     </div>
-                    <div class="align-self-center ms-auto text-end">
+                    <!-- <div class="align-self-center ms-auto text-end">
                         <h4 class="pt-1 font-14 mb-n1 color-yellow-dark">PENDING</h4>
                         <p class="mb-0 font-11"> ID-315-6123</p>
-                    </div>
+                    </div> -->
                 </a>
                 <div class="row">
                     <strong class="col-5 color-theme">Type</strong>
                     <strong class="col-7 text-end">Transfer</strong>
-                    <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div>
-                    <strong class="col-5 color-theme">Paid To</strong>
-                    <strong class="col-7 text-end">GOOGLE LLC LTD</strong>
+                    <!-- <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div> -->
+                    <!-- <strong class="col-5 color-theme">Paid To</strong>
+                    <strong class="col-7 text-end">GOOGLE LLC LTD</strong> -->
                     <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div>
                     <strong class="col-5 color-theme">Date</strong>
                     <strong class="col-7 text-end">12th March</strong>
@@ -492,14 +498,14 @@ $transactions = getTransactions($customerData['customer_id']);
                     <strong class="col-5 color-theme">Amount</strong>
                     <strong class="col-7 text-end color-highlight">$324.55</strong>
                     <div class="col-12 mt-2 mb-2"><div class="divider my-0"></div></div>
-                    <strong class="col-5 color-theme">Paid From</strong>
-                    <strong class="col-7 text-end">Credit Card</strong>
-                    <div class="col-12 mt-2 mb-4"><div class="divider my-0"></div></div>
+                    <!-- <strong class="col-5 color-theme">Paid From</strong>
+                    <strong class="col-7 text-end">Credit Card</strong> -->
+                    <!-- <div class="col-12 mt-2 mb-4"><div class="divider my-0"></div></div> -->
+                    <!-- <div class="col-6">
+                        <a href="#" data-bs-dismiss="offcanvas" class="btn btn-s btn-full gradient-green shadow-bg shadow-bg-xs">View Hash</a>
+                    </div> -->
                     <div class="col-6">
-                        <a href="#" data-bs-dismiss="offcanvas" class="btn btn-s btn-full gradient-green shadow-bg shadow-bg-xs">Approve</a>
-                    </div>
-                    <div class="col-6">
-                        <a href="#" data-bs-dismiss="offcanvas" class="btn btn-s btn-full gradient-red shadow-bg shadow-bg-xs">Reject</a>
+                        <a href="#" id="viewHashId" data-bs-dismiss="offcanvas" class="btn btn-s btn-full gradient-red shadow-bg shadow-bg-xs justify-content-center">View Hash</a>
                     </div>
                 </div>
             </div>
@@ -552,6 +558,29 @@ $transactions = getTransactions($customerData['customer_id']);
 
 </div>
 <!-- End of Page ID-->
+<script type="text/javascript">
+    // $("#submit").click(function () {
+    //     // var text = $("#textarea").val();
+    //     // $("#modal_body").html(text);
+    // });
+
+    function getDetails(transaction_hash) {
+        if (transaction_hash.length>0) {
+            $.ajax({
+                url: "getTransactionDetails.php?transaction_hash="+transaction_hash,
+                type:"GET",
+                dataType:"json",
+                success: function(result){
+                    if (result.success==true) {
+                        $("#viewHashId").attr("href","SFT/details.php?transaction_hash="+result.data.transaction_hash);
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script src="scripts/bootstrap.min.js"></script>
 <script src="scripts/custom.js"></script>

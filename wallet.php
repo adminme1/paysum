@@ -24,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
             $customer_id= $_SESSION['userData']['customer_id'];
             $deposited = deposit($_POST['depositFrom'], $customer_id, $_POST['depositAmount'], $countryData['country_currency']);
             $_SESSION['success']= "Deposit successfull from ".getAccountByAccountId($_POST['depositFrom'])['account_name'];
+            $_SESSION['transaction_data'] = $deposited[1];
+
+            header("location:transaction-complete.php");
         }else{
             $_SESSION['error'] = "Required filed is empty.";
         }
@@ -31,6 +34,8 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
         if (!empty($_POST['withdrawVia']) && !empty($_POST['withdrawAmount'])) {
             $withdrawed = withdraw($_POST['withdrawVia'], $customer_id, $_POST['withdrawAmount'], $countryData['country_currency']);
             $_SESSION['success']= "Withdraw successfull from ".getAccountByAccountId($_POST['withdrawVia'])['account_name'];
+            $_SESSION['transaction_data'] = $withdrawed[1];
+            header("location:transaction-complete.php");
         }else{
             $_SESSION['error'] = "Required filed is empty.";
         }
@@ -60,7 +65,8 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 
               if ($transfer[0]==true) {
                 $_SESSION['success'] = "Transfer successfull!";
-                // header("location:activity.php");
+                $_SESSION['transaction_data'] = $transfer[1];
+                 header("location:transaction-complete.php");
               }else{
                 $_SESSION['errorsDB'] = "Failed to transfer amount!";
               }

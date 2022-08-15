@@ -1,7 +1,7 @@
 // To clear cache on devices, always increase APP_VER number after making changes.
 // The app will serve fresh content right away or after 2-3 refreshes (open / close)
-var APP_NAME = 'PayApp';
-var APP_VER = '1.2';
+var APP_NAME = 'PAYSUM';
+var APP_VER = '1.4';
 var CACHE_NAME = APP_NAME + '-' + APP_VER;
 
 // Files required to make this app work offline.
@@ -9,7 +9,10 @@ var CACHE_NAME = APP_NAME + '-' + APP_VER;
 // Leave REQUIRED_FILES = [] to disable offline.
 var REQUIRED_FILES = [
 	// HTML Files
-	'index.php',
+	// 'index.php',
+	// 'activity.php',
+	'login.php',
+	'logout.php',
 	'component-accordions.html',
 	'component-actions.html',
 	'component-add-to-home.html',
@@ -32,19 +35,15 @@ var REQUIRED_FILES = [
 	'component-tabs.html',
 	'component-typography.html',
 	'components.html',
-	'index-crypto-waves.html',
-	'index-crypto.html',
-	'index-waves.html',
 	'menu-add-card.html',
 	'menu-card-settings.html',
 	'menu-exchange.html',
 	'menu-friends-transfer.html',
 	'menu-highlights.html',
-	'menu-notifications.html',
+	'menu-notifications.php',
 	'menu-request.html',
-	'menu-sidebar.html',
+	'menu-sidebar.php',
 	'menu-transfer.html',
-	'page-activity.html',
 	'page-cards-add.html',
 	'page-cards-exchange.html',
 	'page-cards-multiple.html',
@@ -56,19 +55,12 @@ var REQUIRED_FILES = [
 	'page-invoice.html',
 	'page-payment-bill.html',
 	'page-payment-exchange.html',
-	'page-payment-request.html',
-	'page-payment-transfer.html',
-	'page-payments.html',
-	'page-profile.html',
-	'page-reports.html',
-	'page-signin-1.html',
-	'page-signin-2.html',
-	'page-signup-1.html',
-	'page-signup-2.html',
-	'page-terms-of-service.html',
-	'page-wallet.html',
-	'pages.html',
-	'walkthrough.html',
+	// 'payment-request.php',
+	// 'payment-transfer.php',
+	// 'payments.php',
+	// 'profile.php',
+	// 'signup.php',
+	// 'wallet.php',
 	// Styles
 	'styles/style.css',
 	'styles/bootstrap.css',
@@ -84,7 +76,8 @@ var REQUIRED_FILES = [
 	'fonts/bootstrap-icons.woff',
 	'fonts/bootstrap-icons.woff2',
 	// Images
-	'images/empty.png',
+	// 'images/empty.png',
+	'images/preload-logo.png',
 ];
 
 // Service Worker Diagnostic. Set true to get console logs.

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 12, 2022 at 09:29 PM
+-- Generation Time: Aug 15, 2022 at 03:05 PM
 -- Server version: 10.1.37-MariaDB
 -- PHP Version: 7.3.1
 
@@ -138,7 +138,11 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`notification_id`, `notification_to`, `notification_text`, `notification_seen`, `notification_date_time`) VALUES
-(1, 1, 'Testing...', '0', '2022-08-12 12:07:09');
+(1, 1, 'Testing...', '0', '2022-08-12 12:07:09'),
+(2, 1, 'rokan transfered money to you.', '0', '2022-08-13 19:31:24'),
+(3, 1, 'rokan transfered money to you.', '0', '2022-08-15 12:39:33'),
+(4, 1, 'rokan transfered money to you.', '0', '2022-08-15 12:42:22'),
+(5, 1, 'rokan transfered money to you.', '0', '2022-08-15 12:43:29');
 
 -- --------------------------------------------------------
 
@@ -175,7 +179,14 @@ INSERT INTO `transactions` (`transaction_id`, `transaction_type`, `transaction_h
 (7, 'transfer', NULL, NULL, 2, 1, 100, 'INR', 2, 1, 0, '2022-08-11 01:36:10'),
 (8, 'transfer', NULL, NULL, 1, 2, 300, 'BDT', 1, 2, 0, '2022-08-11 01:43:13'),
 (9, 'deposit', NULL, NULL, 10, 3, 200, 'AUD', 4, 4, 0, '2022-08-12 01:15:36'),
-(10, 'transfer', NULL, NULL, 3, 1, 20, 'AUD', 4, 1, 0, '2022-08-12 01:16:35');
+(10, 'transfer', NULL, NULL, 3, 1, 20, 'AUD', 4, 1, 0, '2022-08-12 01:16:35'),
+(11, 'transfer', '42eed52a4167b3060bccb8887b8291add0fb5996bf73', NULL, 1, 2, 22, 'BDT', 1, 2, 0, '2022-08-13 19:31:23'),
+(12, 'deposit', NULL, NULL, 1, 1, 100, 'BDT', 1, 1, 0, '2022-08-15 12:24:04'),
+(13, 'withdraw', NULL, NULL, 1, 2, 200, 'BDT', 1, 1, 0, '2022-08-15 12:32:19'),
+(14, 'withdraw', NULL, NULL, 1, 2, 200, 'BDT', 1, 1, 0, '2022-08-15 12:33:41'),
+(15, 'transfer', 'd174863b4c757bfb5cf4a99196bdde61ccfa7b1ac2cb', NULL, 1, 2, 300, 'BDT', 1, 2, 0, '2022-08-15 12:39:33'),
+(16, 'transfer', '93666e10e280d509b7a29c1fe89db36fc77437d20db8', NULL, 1, 2, 100, 'BDT', 1, 2, 0, '2022-08-15 12:42:22'),
+(17, 'transfer', 'b7ec914b8a014ef14144cc23f3efd045cd98c3f43e0a', NULL, 1, 2, 10, 'BDT', 1, 2, 0, '2022-08-15 12:43:27');
 
 --
 -- Indexes for dumped tables
@@ -249,13 +260,13 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,52 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="styleHome.css">
-    <link rel="stylesheet" href="styleDetails.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-
-    
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
-    <title>Details</title>
-</head>
-<body class="body">
-    <div class="container-fluid-main">
-        <div class="container-fluid-header ">
-            <div class="row">
-                <div class="col-lg-8 col-md-4 col-sm-2 justify-content-center">
-                </div>
-                <div class="col-lg-8 col-md-4 col-sm-2 justify-content-center"><a style="text-decoration: none; font-family:Roboto,sans-serif; color: white;" href="./index.html">SFT Explorer</a></div>
-                <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none;font-family:Roboto,sans-serif; color: white;" href="./transactions.html">Transactions</a></div>
-                <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none; font-family:Roboto,sans-serif; color: white;" href="./poolTransaction.html">Pool</a></div>
-                <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none; font-family:Roboto,sans-serif; color: white;" href="./about.html">About</a></div>
-                <div class="col-lg-1 col-md-2 col-sm-2 "><a style="text-decoration: none;font-family:Roboto,sans-serif; color: white;" href="./contact.html">Contact</a></div>
-            </div>
-        </div>
-        <!-- <div class="container h-100">
-          <div class="d-flex justify-content-center h-100">
-            
-            <div class="searchbar">
-              <input class="search_input" type="text" name="" placeholder="Search For Anything">
-              <a href="#" class="search_icon"><i class="fas fa-search"></i></a>
-            </div>
-          </div>
-        </div>
-    -->
-        
-             </div>        
-              
-          </div>
+<?php
+require_once '../inc/config.inc.php';
+require_once 'header.inc.php';
+$transactions = getAllTransactions($_GET['transaction_hash']);
+if (empty($transactions) || count($transactions)<1) {
+  $_SESSION['error'] = "Invalid transaction hash..";
+  header("location:index.php");
+}
+$transaction = $transactions[0];
+?>
 
           <div class="container-fluid-details">
             <div class="row">
-                <div class="col-7">
+                <div class="col-12 text-center">
                     <h1>Transaction Details</h1>
                 </div>
-                <div class="col-5">
+                <!-- <div class="col-5">
                     <div class="container h-100">
                         <div class="d-flex justify-content-center h-100">
                           
@@ -56,26 +24,34 @@
                           </div>
                         </div>
                       </div>
-                </div>
+                </div> -->
             </div>
             <br><br><br>
             <div class="container">
                 <div class="row">
                     <div class="col-3">
-                        <ul>Signature</ul>
-                        <ul>Block</ul>
+                        <ul>Transaction Hash</ul>
                         <ul>Timestamp</ul>
-                        <ul>Result</ul>
+                        <!-- <ul>Result</ul> -->
                         <ul>Sender </ul>
                         <ul>To </ul>
                     </div>
                     <div class="col-9">
-                        <ul>mfQBvEoVNNHTuMHd3J5Ttg8LoTHv8UjDG5Fba8QWDctL7gtt819Gk1gPQC7ZWZhxgeqZbwG6jBeJas5VijwVBBU</ul>
-                        <ul>152421619</ul>
-                        <ul>2 days ago August 03, 2022 08:21:22 AM +UTC</ul>
-                        <ul>Success</ul>
-                        <ul>sa*****32</ul>
-                        <ul>rk*****33</ul>
+                        <ul><?=$transaction['transaction_hash']?></ul>
+                        <ul><?=$transaction['transaction_date_time']?></ul>
+                        <!-- <ul>Success</ul> -->
+                        <ul>
+                          <?php 
+            $fromUser = getUserData($transaction['from_customer_id'])['customer_username'];
+            echo substr($fromUser, 0,2)."*****".substr($fromUser, -2);
+            ?>
+                        </ul>
+                        <ul>
+                          <?php
+            $toUser=getUserData($transaction['to_customer_id'])['customer_username'];
+            echo substr($toUser, 0,2)."*****".substr($toUser, -2);
+            ?>
+                        </ul>
                     </div>
                 </div>
             </div>
